@@ -47,7 +47,7 @@ class BackendHealth:
         data = {'backends': self.backends, 'last_update': datetime.now()}
         dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime) else None
         with open('health.json', 'w') as health_dump:
-            json.dump(data, health_dump, indent=1, default=dthandler)    
+            json.dump(data, health_dump, indent=2, default=dthandler)    
     
     
         
