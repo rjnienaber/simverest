@@ -1,16 +1,15 @@
 from datetime import datetime
 import json
 
-class BackendHealth:
-    def __init__(self, ssh):
-        self.ssh = ssh
+class VarnishHealth:
+    def __init__(self):
         self.backends = {}
         
         #we keep a count of how many lines processed so we dump the status regularly
         self.lines_processed = 0
 
-    def process(self):
-        stdin, stdout, stderr = self.ssh.exec_command("unbuffer varnishlog | grep -o --line-buffered -P '(?<=\- ).+ Still (sick|healthy)'")
+    def process(self, ssh):
+        stdin, stdout, stderr = ssh.exec_command("unbuffer varnishlog | grep -o --line-buffered -P '(?<=\- ).+ Still (sick|healthy)'")
         
         #this line should run indefinitely as the varnishlog never completes
         for line in stdout:
