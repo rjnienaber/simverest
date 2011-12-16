@@ -9,9 +9,9 @@ class VarnishHealth:
         self.lines_processed = 0
 
     def process(self, ssh):
-        stdin, stdout, stderr = ssh.exec_command("unbuffer varnishlog | grep -o --line-buffered -P '(?<=\- ).+ Still (sick|healthy)'")
+        stdin, stdout, stderr = ssh.exec_command("varnishlog | grep -o --line-buffered -P '(?<=\- ).+ Still (sick|healthy)'")
         
-        #this line should run indefinitely as the varnishlog never completes
+        #this line should loop indefinitely as the varnishlog never completes
         for line in stdout:
             self._process_line(line)
     
