@@ -24,7 +24,7 @@ class VarnishStats:
             varnish_stats['process'] = self._get_process_stats(ssh)
             varnish_stats['name'] = self.hostname
             
-            utils.dump_data(varnish_stats, 'stats.json')
+            utils.dump_data(varnish_stats, utils.STATS_JSON_FILE)
             
             time.sleep(1)
             

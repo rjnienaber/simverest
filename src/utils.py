@@ -4,6 +4,9 @@ from contextlib import closing
 import json
 from paramiko import SSHClient, SSHException, AutoAddPolicy
 
+HEALTH_JSON_FILE = 'health.json'
+STATS_JSON_FILE = 'stats.json'
+
 def start_ssh(host, username, password):
     ssh = SSHClient()
     try:

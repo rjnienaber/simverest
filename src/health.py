@@ -51,4 +51,4 @@ class VarnishHealth:
         
     def _write_status(self):
         data = {'backends': self.backends, 'last_update': datetime.now(), 'name': self.hostname}
-        utils.dump_data(data, 'health.json')
+        utils.dump_data(data, utils.HEALTH_JSON_FILE)

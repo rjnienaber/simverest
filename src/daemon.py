@@ -4,6 +4,7 @@ from multiprocessing import Process
 from paramiko import SSHClient, SSHException, AutoAddPolicy
 from health import VarnishHealth
 from stats import VarnishStats
+import web
 import utils
 
 def process_data(host, username, password, varnish):
@@ -12,7 +13,13 @@ def process_data(host, username, password, varnish):
             varnish.process(ssh)
     except KeyboardInterrupt:
         pass
-    
+
+def start_web_server(varnish_hosts):
+    try:
+        web.start(varnish_hosts)
+    except KeyboardInterrupt:
+        pass
+        
 def start_process(target, args):
     process = Process(target=target, args=args)
     process.start()
@@ -28,6 +35,9 @@ if __name__ == "__main__":
                   'process': start_process(target=process_data, args=a)} 
                  for a in arguments]
     print 'Started gathering varnish data'
+                 
+    processes.append({'target': start_web_server, 'args': ([hostname], ), 'restarts': 0,
+                      'process': start_process(target=start_web_server, args=([hostname], ))})
     
     try:
         while True:
