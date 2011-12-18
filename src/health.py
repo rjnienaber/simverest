@@ -1,4 +1,5 @@
 from datetime import datetime
+from contextlib import closing
 import json
 
 class VarnishHealth:
@@ -9,19 +10,24 @@ class VarnishHealth:
         self.lines_processed = 0
 
     def process(self, ssh):
-        stdin, stdout, stderr = ssh.exec_command("varnishlog | grep -o --line-buffered -P '(?<=\- ).+ Still (sick|healthy)'")
-        
-        #this line should loop indefinitely as the varnishlog never completes
-        for line in stdout:
-            self._process_line(line)
+        with closing(ssh.get_transport()) as transport:
+            with closing(transport.open_session()) as channel:
+                channel.get_pty()
+                channel.exec_command("unbuffer varnishlog | grep --line-buffered -E 'sick|healthy' | awk '{print $4,$6; fflush();}'")
+                stdout = channel.makefile('rb', 0)
+                
+                #this line should loop indefinitely as the varnishlog never completes
+                for line in stdout:
+                    print line.strip()
+                    self._process_line(line.strip())
     
     def _process_line(self, line):
         """'line' should be in this format: webserver Still healthy"""
         fragments = line.split()
-        if (len(fragments) != 3): 
+        if (len(fragments) != 2): 
             return
             
-        host, ignored, state = fragments
+        host, state = fragments
 
         result = self._check_status(host, state)
         if (result or self.lines_processed == 100):

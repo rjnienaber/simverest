@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 import json
 import copy
-from elementtree import ElementTree
+from xml.etree import ElementTree
 
 class VarnishStats:
     def __init__(self):
@@ -13,7 +13,7 @@ class VarnishStats:
         self.varnish_command = 'varnishstat -x -f ' + counter_list
         self.counter_records = []
         self.record_limit = 10
-        
+
     def process(self, ssh):
         while True:
             varnish_counters = self._get_current_varnish_counters(ssh)
@@ -61,7 +61,6 @@ class VarnishStats:
             difference = join[0]['value'] - join[1]['value']
             join[2]['value'] = difference / period
 
-        print record_count
         if record_count == self.record_limit:
             self.counter_records.pop()
             
