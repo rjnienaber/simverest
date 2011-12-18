@@ -4,12 +4,11 @@ from multiprocessing import Process
 from paramiko import SSHClient, SSHException, AutoAddPolicy
 from health import VarnishHealth
 from stats import VarnishStats
+import utils
 
 def process_data(host, username, password, varnish):
     try:
-        with closing(SSHClient()) as ssh:
-            ssh.set_missing_host_key_policy(AutoAddPolicy())
-            ssh.connect(host, username=username, password=password)
+        with closing(utils.start_ssh(host, username, password)) as ssh:
             varnish.process(ssh)
     except KeyboardInterrupt:
         pass
@@ -21,8 +20,10 @@ def start_process(target, args):
     
 if __name__ == "__main__":
     details = tuple(sys.argv[1:4])
-
-    arguments = [details + (VarnishStats(),), details + (VarnishHealth(),)]
+    host, username, password = sys.argv[1:4]
+    hostname = utils.ssh_exec_command('hostname', host=host, username=username, password=password)
+    
+    arguments = [details + (VarnishStats(hostname),), details + (VarnishHealth(hostname),)]
     processes = [{'target': process_data, 'args': a, 'restarts': 0,
                   'process': start_process(target=process_data, args=a)} 
                  for a in arguments]

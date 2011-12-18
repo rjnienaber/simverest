@@ -3,9 +3,11 @@ from datetime import datetime
 import json
 import copy
 from xml.etree import ElementTree
+import utils
 
 class VarnishStats:
-    def __init__(self):
+    def __init__(self, hostname):
+        self.hostname = hostname
         counters = ['client_conn', 'client_req', 'cache_hit', 'cache_hitpass', 
             'cache_miss', 'client_drop', 'backend_conn']
         
@@ -15,18 +17,19 @@ class VarnishStats:
         self.record_limit = 10
 
     def process(self, ssh):
+        self.server_timezone_offset = utils.ssh_exec_command('date +%z', ssh=ssh)
         while True:
             varnish_counters = self._get_current_varnish_counters(ssh)
             varnish_stats = self._process_varnish_counters(varnish_counters)
             varnish_stats['process'] = self._get_process_stats(ssh)
+            varnish_stats['name'] = self.hostname
             
-            self._write_stats(varnish_stats)
+            utils.dump_data(varnish_stats, 'stats.json')
             
             time.sleep(1)
             
     def _get_current_varnish_counters(self, ssh):
-        stdin, stdout, stderr = ssh.exec_command(self.varnish_command)
-        varnish_stats_xml = stdout.read()
+        varnish_stats_xml = utils.ssh_exec_command(self.varnish_command, ssh=ssh)
         tree = ElementTree.fromstring(varnish_stats_xml)
 
         stat_elements = tree.findall('stat')
@@ -39,8 +42,8 @@ class VarnishStats:
                      'value': int(children[1].text),
                      'description': children[3].text}
             stats.append(counter)
-        
-        return {'timestamp': datetime.strptime(tree.attrib['timestamp'],'%Y-%m-%dT%H:%M:%S'), 
+
+        return {'timestamp': datetime.now(), 
                 'varnish': stats}
 
     def _process_varnish_counters(self, varnish_counters):
@@ -67,12 +70,7 @@ class VarnishStats:
         return varnish_counters
     
     def _get_process_stats(self, ssh):
-        stdin, stdout, stderr = ssh.exec_command('top -b -n 1 -d 1 -U nobody | grep varnishd')
-        top_stats = stdout.readline().split()
+        command = 'top -b -n 1 -d 1 -U nobody | grep varnishd'
+        top_stats = utils.ssh_exec_command(command, ssh=ssh).split()
         return {'cpu': top_stats[8], 'memory':top_stats[9],  
                 'virtualmem': top_stats[4], 'reservedmem': top_stats[5]}
-
-    def _write_stats(self, data):
-        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime) else None
-        with open('stats.json', 'w') as stats_dump:
-            json.dump(data, stats_dump, indent=2, default=dthandler)    
