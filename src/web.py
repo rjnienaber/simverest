@@ -10,14 +10,21 @@ def list_servers():
     return json.dumps(_varnish_hosts)
     
 @route('/api/server/:name/backends')
-def server_backends(name):
+def server_health(name):
     with open(utils.HEALTH_JSON_FILE, 'r') as file:
         return file.read()
 
 @route('/api/server/:name/stats')
-def server_backends(name):
+def server_stats(name):
     with open(utils.STATS_JSON_FILE, 'r') as file:
         return file.read()
+
+@route('/')
+@view('default')
+def basic_view():
+    health = json.loads(server_health(None))
+    health.update(json.loads(server_stats(None)))
+    return health
         
 def start(varnish_hosts, host='0.0.0.0', port=8080, debug=False):
     bottle.debug(debug)
