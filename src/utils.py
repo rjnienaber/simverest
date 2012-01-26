@@ -34,3 +34,7 @@ def dump_data(data, filepath):
     dthandler = lambda obj: convert_to_utc(obj) if isinstance(obj, datetime) else None
     with open(filepath, 'w') as file:
         json.dump(data, file, indent=2, default=dthandler)
+        
+def read_all(filePath):
+    with open(filePath, 'r') as file:
+        return file.read()

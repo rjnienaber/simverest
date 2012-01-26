@@ -30,7 +30,7 @@ if __name__ == "__main__":
     host, username, password = sys.argv[1:4]
     hostname = utils.ssh_exec_command('hostname', host=host, username=username, password=password)
     
-    arguments = [details + (VarnishStats(hostname),), details + (VarnishHealth(hostname),)]
+    arguments = [details + (VarnishStats(hostname),), details + (VarnishHealth(hostname, False),)]
     processes = [{'target': process_data, 'args': a, 'restarts': 0,
                   'process': start_process(target=process_data, args=a)} 
                  for a in arguments]
@@ -52,4 +52,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
         
-    print 'Ending gathering varnish data'
+    print 'Ending gathering of varnish data'

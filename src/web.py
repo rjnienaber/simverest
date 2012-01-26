@@ -2,6 +2,7 @@ from bottle import route, run, view
 import bottle
 import json
 import utils
+import time
 
 _varnish_hosts=[]
 
@@ -11,14 +12,21 @@ def list_servers():
     
 @route('/api/server/:name/backends')
 def server_health(name):
-    with open(utils.HEALTH_JSON_FILE, 'r') as file:
-        return file.read()
+    return read_json(utils.HEALTH_JSON_FILE)
 
 @route('/api/server/:name/stats')
 def server_stats(name):
-    with open(utils.STATS_JSON_FILE, 'r') as file:
-        return file.read()
+    return read_json(utils.STATS_JSON_FILE)
 
+def read_json(filePath):
+    '''Sometimes the file can be in the middle of being written and will return an empty value.
+    This function will wait half a second and then retry and won't return until it has a read a non-empty value'''
+    while True:
+        varnish_values = utils.read_all(filePath)
+        if varnish_values != '':
+            return varnish_values
+        time.sleep(0.5)
+    
 @route('/')
 @view('default')
 def basic_view():

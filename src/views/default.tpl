@@ -61,7 +61,7 @@
 				%for stat in varnish:
 				<tr>
 					<td>{{stat['name']}}</td>
-					<td>{{stat['value']}}</td>
+					<td>{{"{0:.2f}".format(stat['value'])}}</td>
 					<td class="description">{{stat['description']}}</td>
 				</tr>
 				%end

@@ -17,16 +17,19 @@ class VarnishStats:
         self.record_limit = 10
 
     def process(self, ssh):
-        self.server_timezone_offset = utils.ssh_exec_command('date +%z', ssh=ssh)
-        while True:
-            varnish_counters = self._get_current_varnish_counters(ssh)
-            varnish_stats = self._process_varnish_counters(varnish_counters)
-            varnish_stats['process'] = self._get_process_stats(ssh)
-            varnish_stats['name'] = self.hostname
-            
-            utils.dump_data(varnish_stats, utils.STATS_JSON_FILE)
-            
-            time.sleep(1)
+        try:
+            self.server_timezone_offset = utils.ssh_exec_command('date +%z', ssh=ssh)
+            while True:
+                varnish_counters = self._get_current_varnish_counters(ssh)
+                varnish_stats = self._process_varnish_counters(varnish_counters)
+                varnish_stats['process'] = self._get_process_stats(ssh)
+                varnish_stats['name'] = self.hostname
+                
+                utils.dump_data(varnish_stats, utils.STATS_JSON_FILE)
+                
+                time.sleep(1)
+        finally:
+            print 'Stats collecting ending'
             
     def _get_current_varnish_counters(self, ssh):
         varnish_stats_xml = utils.ssh_exec_command(self.varnish_command, ssh=ssh)

@@ -4,23 +4,29 @@ import json
 import utils
 
 class VarnishHealth:
-    def __init__(self, hostname):
+    def __init__(self, hostname, use_unbuffer):
         self.backends = {}
         self.hostname = hostname
+        self.use_unbuffer = use_unbuffer
         
         #we keep a count of how many lines processed so we dump the status regularly
         self.lines_processed = 0
 
     def process(self, ssh):
-        with closing(ssh.get_transport()) as transport:
-            with closing(transport.open_session()) as channel:
-                channel.get_pty()
-                channel.exec_command("unbuffer varnishlog | grep --line-buffered -E 'sick|healthy' | awk '{print $4,$6; fflush();}'")
-                stdout = channel.makefile('rb', 0)
-                
-                #this line should loop indefinitely as the varnishlog never completes
-                for line in stdout:
-                    self._process_line(line.strip())
+        try:
+            with closing(ssh.get_transport()) as transport:
+                with closing(transport.open_session()) as channel:
+                    channel.get_pty()
+                    varnishlog_command = "varnishlog | grep --line-buffered -E 'sick|healthy' | awk '{print $4,$6; fflush();}'"
+                    varnishlog_command = 'unbuffer ' + varnishlog_command if self.use_unbuffer else varnishlog_command
+                    channel.exec_command(varnishlog_command)
+                    stdout = channel.makefile('rb', 0)
+                    
+                    #this line should loop indefinitely as the varnishlog never completes
+                    for line in stdout:
+                        self._process_line(line.strip())
+        finally:
+            print 'Health collecting ending'
     
     def _process_line(self, line):
         """'line' should be in this format: webserver healthy"""
