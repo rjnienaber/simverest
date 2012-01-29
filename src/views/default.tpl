@@ -28,11 +28,11 @@
 					<th>Status</th>
 					<th class="lastchanged">Last Changed</th>
 				</tr>
-				%for backend in sorted(backends):
+				%for backend in sorted(backends, key=lambda x: x['name']):
 				<tr>
-					<td>{{backend}}</td>
-					<td>{{backends[backend]['state']}}</td>
-					<td class="lastchanged">{{backends[backend]['last_change']}}</td>
+					<td>{{backend['name']}}</td>
+					<td>{{backend['state']}}</td>
+					<td class="lastchanged">{{backend['last_change']}}</td>
 				</tr>
 				%end
 			</table>
