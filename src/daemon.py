@@ -1,10 +1,9 @@
-import time, sys
+import time, sys, os
 from contextlib import closing
 from multiprocessing import Process 
-from paramiko import SSHClient, SSHException, AutoAddPolicy
-from health import VarnishHealth
-from stats import VarnishStats
-import web
+from collectors.health import VarnishHealth
+from collectors.stats import VarnishStats
+from web import api
 import utils
 
 def process_data(host, username, password, varnish):
@@ -16,7 +15,7 @@ def process_data(host, username, password, varnish):
 
 def start_web_server(varnish_hosts):
     try:
-        web.start(varnish_hosts)
+        api.start(varnish_hosts)
     except KeyboardInterrupt:
         pass
         
@@ -26,6 +25,8 @@ def start_process(target, args):
     return process
     
 if __name__ == "__main__":
+    utils.set_json_path(os.getcwd())
+
     details = tuple(sys.argv[1:4])
     host, username, password = sys.argv[1:4]
     hostname = utils.ssh_exec_command('hostname', host=host, username=username, password=password)
@@ -35,7 +36,8 @@ if __name__ == "__main__":
                   'process': start_process(target=process_data, args=a)} 
                  for a in arguments]
     print 'Started gathering varnish data'
-                 
+    
+    processes = []
     processes.append({'target': start_web_server, 'args': ([hostname], ), 'restarts': 0,
                       'process': start_process(target=start_web_server, args=([hostname], ))})
     

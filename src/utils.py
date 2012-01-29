@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import datetime
 from contextlib import closing
@@ -6,6 +7,10 @@ from paramiko import SSHClient, SSHException, AutoAddPolicy
 
 HEALTH_JSON_FILE = 'health.json'
 STATS_JSON_FILE = 'stats.json'
+
+def set_json_path(path):
+    HEALTH_JSON_FILE = os.path.join(path, 'health.json')
+    STATS_JSON_FILE = os.path.join(path, 'stats.json')
 
 def start_ssh(host, username, password):
     ssh = SSHClient()
