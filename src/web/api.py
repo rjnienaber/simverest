@@ -27,7 +27,7 @@ def server_stats(name):
 
 def process_jsonp(file_path):
     response.content_type = 'application/json'
-    return '{0}({1})'.format(request.query.callback, read_json(utils.HEALTH_JSON_FILE))
+    return '{0}({1})'.format(request.query.callback, read_json(file_path))
     
 def read_json(file_path):
     while True:
@@ -43,10 +43,11 @@ def basic_view():
     view_data.update(json.loads(read_json(utils.STATS_JSON_FILE)))
     return view_data
 
-def start(varnish_hosts, host='0.0.0.0', port=8080, debug=False):
+def start(varnish_hosts, port, server, host='0.0.0.0', debug=False):
+    print server
     bottle.debug(debug)
     _varnish_hosts['servers'] = varnish_hosts
     
     stripped_slashes_app = RemoveTrailingSlashesMiddleware(app)
     print 'Starting web server on {0} and port {1}'.format(host, port)
-    run(stripped_slashes_app, host=host, port=port, quiet=True)
+    run(stripped_slashes_app, host=host, port=port, quiet=True, server=server)

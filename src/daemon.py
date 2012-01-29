@@ -1,9 +1,9 @@
 import time, sys, os
 from contextlib import closing
-from multiprocessing import Process 
 from collectors.health import VarnishHealth
 from collectors.stats import VarnishStats
 from web import api
+from subprocess import SubProcess
 import utils
 
 def process_data(host, username, password, varnish):
@@ -13,44 +13,36 @@ def process_data(host, username, password, varnish):
     except KeyboardInterrupt:
         pass
 
-def start_web_server(varnish_hosts):
+def start_web_server(varnish_hosts, port=8080, server='wsgiref'):
     try:
-        api.start(varnish_hosts)
+        api.start(varnish_hosts, port, server)
     except KeyboardInterrupt:
         pass
         
-def start_process(target, args):
-    process = Process(target=target, args=args)
-    process.start()
-    return process
-    
 if __name__ == "__main__":
     utils.set_json_path(os.getcwd())
 
     details = tuple(sys.argv[1:4])
-    host, username, password = sys.argv[1:4]
+    host, username, password, http_port, server = sys.argv[1:6]
     hostname = utils.ssh_exec_command('hostname', host=host, username=username, password=password)
     
-    arguments = [details + (VarnishStats(hostname),), details + (VarnishHealth(hostname, False),)]
-    processes = [{'target': process_data, 'args': a, 'restarts': 0,
-                  'process': start_process(target=process_data, args=a)} 
-                 for a in arguments]
+    stats = SubProcess('Stats', process_data, details + (VarnishStats(hostname),))
+    health = SubProcess('Health', process_data, details + (VarnishHealth(hostname, False),))
+    web = SubProcess('Web', start_web_server, [hostname], {'port': http_port, 'server':server})
+
+    stats.start()
+    health.start()
     print 'Started gathering varnish data'
     
-    processes = []
-    processes.append({'target': start_web_server, 'args': ([hostname], ), 'restarts': 0,
-                      'process': start_process(target=start_web_server, args=([hostname], ))})
+    web.start()
+    
+    processes = [stats, health, web]
     
     try:
         while True:
             time.sleep(1)
-            deadprocesses = [p for p in processes if not p['process'].is_alive()]
-            for deadprocess in deadprocesses:
-                target, process, args = deadprocess['target'], deadprocess['process'], deadprocess['args']
-                process.terminate()
-                deadprocess['process'] = start_process(target=target, args=args)
-                deadprocess['restarts'] += 1
-                print 'Restarts: %s' % deadprocess['restarts']
+            for process in processes:
+                process.check()
     except KeyboardInterrupt:
         pass
         
