@@ -4,7 +4,9 @@ from collectors.health import VarnishHealth
 from collectors.stats import VarnishStats
 from web import http_server
 from subprocess import SubProcess
+from options import get_arguments
 import utils
+
 
 def process_data(host, username, password, varnish):
     try:
@@ -21,14 +23,15 @@ def start_web_server(varnish_hosts, port=8080, server='wsgiref'):
         
 if __name__ == "__main__":
     utils.set_json_path(os.getcwd())
+    
+    arguments = get_arguments()
 
-    details = tuple(sys.argv[1:4])
-    host, username, password, http_port, server = sys.argv[1:6]
-    hostname = hostname = utils.ssh_exec_command('hostname', host=host, username=username, password=password)
+    details = (arguments.host, arguments.username, arguments.password)
+    hostname = hostname = utils.ssh_exec_command('hostname', host=details[0], username=details[1], password=details[2])
     
     stats = SubProcess('Stats', process_data, details + (VarnishStats(hostname),))
     health = SubProcess('Health', process_data, details + (VarnishHealth(hostname, False),))
-    web = SubProcess('Web', start_web_server, [hostname], {'port': http_port, 'server':server})
+    web = SubProcess('Web', start_web_server, [hostname], {'port': arguments.port, 'server':arguments.wsgi_server})
 
     stats.start()
     health.start()
