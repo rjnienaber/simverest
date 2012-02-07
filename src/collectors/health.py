@@ -56,7 +56,7 @@ class VarnishHealth:
         return True
         
     def _write_status(self):
-        backend_data = [{'name':b}  for b in self.backends]
+        backend_data = [{'name':b} for b in self.backends]
         for backend in backend_data:
             backend.update(self.backends[backend['name']])
         data = {'backends': backend_data, 'last_update': datetime.now(), 'name': self.hostname}

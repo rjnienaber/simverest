@@ -11,8 +11,7 @@ class VarnishStats:
         counters = ['client_conn', 'client_req', 'cache_hit', 'cache_hitpass', 
             'cache_miss', 'client_drop', 'backend_conn']
         
-        counter_list = ','.join(counters)
-        self.varnish_command = 'varnishstat -x -f ' + counter_list
+        self.varnish_command = 'varnishstat -x -f ' + ','.join(counters)
         self.counter_records = []
         self.record_limit = 10
 

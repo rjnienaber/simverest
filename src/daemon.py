@@ -40,6 +40,9 @@ if __name__ == "__main__":
         print 'Started gathering varnish data'
         
         processes += [stats, health]
+    else:
+        import testing
+        testing.generate_test_data()
         
     web = SubProcess('Web', start_web_server, [hostname], {'port': arguments.port, 'server':arguments.wsgi_server})
     web.start()
