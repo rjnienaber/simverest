@@ -25,21 +25,26 @@ if __name__ == "__main__":
     utils.set_json_path(os.getcwd())
     
     arguments = get_arguments()
-
-    details = (arguments.host, arguments.username, arguments.password)
-    hostname = hostname = utils.ssh_exec_command('hostname', host=details[0], username=details[1], password=details[2])
     
-    stats = SubProcess('Stats', process_data, details + (VarnishStats(hostname),))
-    health = SubProcess('Health', process_data, details + (VarnishHealth(hostname, False),))
+    hostname = 'testing'
+    processes = []
+    if not arguments.test:
+
+        details = (arguments.host, arguments.username, arguments.password)
+        hostname = hostname = utils.ssh_exec_command('hostname', host=details[0], username=details[1], password=details[2])
+    
+        stats = SubProcess('Stats', process_data, details + (VarnishStats(hostname),))
+        health = SubProcess('Health', process_data, details + (VarnishHealth(hostname, False),))
+        stats.start()
+        health.start()
+        print 'Started gathering varnish data'
+        
+        processes += [stats, health]
+        
     web = SubProcess('Web', start_web_server, [hostname], {'port': arguments.port, 'server':arguments.wsgi_server})
-
-    stats.start()
-    health.start()
-    print 'Started gathering varnish data'
-    
     web.start()
     
-    processes = [web, stats, health]
+    processes.append(web)
     
     try:
         while True:
