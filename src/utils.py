@@ -43,3 +43,10 @@ def dump_data(data, filepath):
 def read_all(filePath):
     with open(filePath, 'r') as file:
         return file.read()
+
+def read_json(file_path):
+    while True:
+        data = read_all(file_path)
+        if data != '':
+            return data
+        time.sleep(0.5)
