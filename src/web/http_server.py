@@ -1,8 +1,5 @@
-from bottle import Bottle, run, default_app
+from bottle import Bottle, run
 import bottle
-import json
-import utils
-import time
 import os
 
 from middleware import RemoveTrailingSlashesMiddleware
@@ -12,8 +9,10 @@ from web import web
 def start(varnish_hosts, port, server, host='0.0.0.0', debug=False):
     bottle.debug(True)
     bottle.TEMPLATE_PATH.append(os.path.join(os.path.dirname(__file__), 'views'))
-
-    api.varnish_hosts['servers'] = varnish_hosts
+    
+    api.VARNISH_HOSTS['servers'] = varnish_hosts
+    web.STATIC_PATH = os.path.join(os.path.dirname(__file__), 'static')
+    
     web.mount('/api', api)
     
     stripped_slashes_app = RemoveTrailingSlashesMiddleware(web)

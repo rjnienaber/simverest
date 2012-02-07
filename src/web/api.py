@@ -1,12 +1,9 @@
-from bottle import Bottle, run, view, redirect, static_file, request, response
+from bottle import Bottle, redirect, request, response
 import bottle
-import json
 import utils
-import time
-
 
 api = Bottle()
-api.varnish_hosts = {}
+api.VARNISH_HOSTS = {}
 
 @api.route('/')
 def redirect_api_servers():
@@ -14,7 +11,7 @@ def redirect_api_servers():
 
 @api.route('/servers')
 def list_servers():
-    return api.varnish_hosts
+    return api.VARNISH_HOSTS
 
 @api.route('/server/:name/backends')
 def server_health(name):
