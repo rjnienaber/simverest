@@ -1,6 +1,7 @@
 var backendURL = "api/server/varnish1/backends?callback=?";
 var statsURL = "api/server/varnish1/stats?callback=?";
 var timer;
+var sparkMap = {};
 
 function execute(){
     showHealth();
@@ -65,7 +66,7 @@ function updateServerStatusRow(row, backendData){
     }else{
         row.find('.health').find('span').html("Failure");
         row.find('.health').find('span').removeClass("label-success");
-        row.find('.health').find('span').addClass("label-failure");
+        row.find('.health').find('span').addClass("label-important");
     }
 }
 
@@ -86,9 +87,9 @@ function updateProcess(processInfo){
 
         if (row.html() == null){
             createProcessRow(table, key);
-            updateProcessRow(table.find('#'+key), val);
+            updateProcessRow(table.find('#'+key), key, val);
         }else{
-            updateProcessRow(row, val);
+            updateProcessRow(row, key, val);
         }
     });
 }
@@ -104,11 +105,19 @@ function createProcessRow(table, name){
             .append($('<td>')
                 .append('<i class="icon-resize-full">')
             )
+            .append($('<td class="spark_cell">')
+            )
         );
 }
 
-function updateProcessRow(row, info){
+function updateProcessRow(row, name, info){
     row.find('.processValue').html(info);
+
+    if(row.find('.spark_cell').find('.sparkline').html() == null){
+        row.find('.spark_cell').append($('<span class="sparkline" id="spark_'+name+'">'));
+    }
+
+    updateSparkline(name, info);
 }
 
 function updateStats(statsInfo){
@@ -121,9 +130,9 @@ function updateStats(statsInfo){
 
         if (row.html() == null){
             createStatsRow(table, name);
-            updateStatsRow(table.find('#'+name), info);
+            updateStatsRow(table.find('#'+name), name, info);
         }else{
-            updateStatsRow(row, info);
+            updateStatsRow(row, name, info);
         }
     });
 }
@@ -131,22 +140,45 @@ function updateStats(statsInfo){
 function createStatsRow(table, name){
     table.find('tbody')
         .append($('<tr id="'+name+'">')
-            .append($('<td>')
-                .text(name)
+            .append($('<td class="statDescription">')
             )
             .append($('<td class="statStatus">')
-            )
-            .append($('<td class="statDescription">')
             )
             .append($('<td>')
                 .append('<i class="icon-resize-full">')
             )
+            .append($('<td class="spark_cell">')
+            )
         );
 }
 
-function updateStatsRow(row, info){
+function updateStatsRow(row, name, info){
     row.find('.statStatus').html(info.value.toFixed(2));
     row.find('.statDescription').html(info.description);
+
+    if(row.find('.spark_cell').find('.sparkline').html() == null){
+        row.find('.spark_cell').append($('<span class="sparkline" id="spark_'+name+'">'));
+    }
+
+    updateSparkline(name, info.value.toFixed(2));
+}
+
+function updateSparkline(name, info){
+
+    if(sparkMap[name] == null){
+        sparkMap[name] = [];
+    }
+
+    if(sparkMap[name].length == 20){
+        for(var i = 0; i < 20; i ++){
+            sparkMap[name][i] = sparkMap[name][i+1];
+        }
+        sparkMap[name].pop();
+    }
+
+    sparkMap[name].push(info);
+
+    $('#spark_'+name).sparkline(sparkMap[name], { width: sparkMap[name].length*4 });
 }
 
 
