@@ -2,20 +2,21 @@ var backendURL = "api/server/varnish1/backends?callback=?";
 var statsURL = "api/server/varnish1/stats?callback=?";
 var timer;
 var sparkMap = {};
+var chartMap = {};
+var counter = 1;
+var colourCounter = 1;
+
+$(document).ready(function (){
+    execute();
+});
 
 function execute(){
-    showHealth();
-    timer=setTimeout("execute()",500);
-}
-
-
-function showHealth(){
     getBackends();
     getStats();
-}
 
-function updateTimestamp(timestamp){
-    $('#timeLastUpdated').html(timestamp);
+    counter++;
+
+    timer=setTimeout("execute()",1000);
 }
 
 function getBackends(){
@@ -35,6 +36,52 @@ function getBackends(){
                 }
             });
         });
+}
+
+function getStats(){
+    $.getJSON(statsURL,
+        function(data) {
+            updateTimestamp(data.timestamp);
+            updateProcess(data.process);
+            updateStats(data.varnish);
+        });
+}
+
+
+function updateDataPoints(row, name, info){
+    if(sparkMap[name] == null){
+        sparkMap[name] = [];
+    }
+
+    if(sparkMap[name].length == 20){
+        for(var i = 0; i < 20; i ++){
+            sparkMap[name][i] = sparkMap[name][i+1];
+        }
+        sparkMap[name].pop();
+    }
+
+    sparkMap[name].push(info);
+
+    if(chartMap[name] == null){
+        chartMap[name] = {'label':name, 'data':[], 'color': colourCounter++};
+    }
+
+    if(chartMap[name].data.length == 120){
+        for(var i = 0; i < 120; i ++){
+            chartMap[name].data[i] = chartMap[name].data[i+1];
+        }
+        chartMap[name].data.pop();
+    }
+
+    chartMap[name].data.push([counter,info]);
+
+    drawSparklines(row, name);
+    drawGraph();
+
+}
+
+function updateTimestamp(timestamp){
+    $('#timeLastUpdated').html(timestamp);
 }
 
 function createServerStatusRow(table, name){
@@ -57,9 +104,7 @@ function createServerStatusRow(table, name){
 function updateServerStatusRow(row, backendData){
     row.find('.lastchanged').html(backendData.last_change);
 
-    var health = backendData.state;
-
-    if(health == "healthy"){
+    if(backendData.state == "healthy"){
         row.find('.health').find('span').html("Healthy");
         row.find('.health').find('span').removeClass("label-important");
         row.find('.health').find('span').addClass("label-success");
@@ -68,15 +113,6 @@ function updateServerStatusRow(row, backendData){
         row.find('.health').find('span').removeClass("label-success");
         row.find('.health').find('span').addClass("label-important");
     }
-}
-
-function getStats(){
-    $.getJSON(statsURL,
-        function(data) {
-            updateTimestamp(data.timestamp);
-            updateProcess(data.process);
-            updateStats(data.varnish);
-        });
 }
 
 function updateProcess(processInfo){
@@ -113,15 +149,10 @@ function createProcessRow(table, name){
 function updateProcessRow(row, name, info){
     row.find('.processValue').html(info);
 
-    if(row.find('.spark_cell').find('.sparkline').html() == null){
-        row.find('.spark_cell').append($('<span class="sparkline" id="spark_'+name+'">'));
-    }
-
-    updateSparkline(name, info);
+    updateDataPoints(row, name, info);
 }
 
 function updateStats(statsInfo){
-
     $.each(statsInfo, function(i,info){
         var name = info.name;
 
@@ -156,32 +187,36 @@ function updateStatsRow(row, name, info){
     row.find('.statStatus').html(info.value.toFixed(2));
     row.find('.statDescription').html(info.description);
 
+    updateDataPoints(row, name, info.value.toFixed(2))
+}
+
+function drawSparklines(row, name){
+
     if(row.find('.spark_cell').find('.sparkline').html() == null){
         row.find('.spark_cell').append($('<span class="sparkline" id="spark_'+name+'">'));
     }
-
-    updateSparkline(name, info.value.toFixed(2));
-}
-
-function updateSparkline(name, info){
-
-    if(sparkMap[name] == null){
-        sparkMap[name] = [];
-    }
-
-    if(sparkMap[name].length == 20){
-        for(var i = 0; i < 20; i ++){
-            sparkMap[name][i] = sparkMap[name][i+1];
-        }
-        sparkMap[name].pop();
-    }
-
-    sparkMap[name].push(info);
 
     $('#spark_'+name).sparkline(sparkMap[name], { width: sparkMap[name].length*4 });
 }
 
 
-$(document).ready(function (){
-    execute();
-});
+
+function drawGraph(){
+
+    var data = [];
+
+    if(chartMap['client_conn'] != null){
+        data.push(chartMap['client_conn']);
+    }
+//
+//    $.each(chartMap, function(key, value) {
+//        data.push(chartMap[key]);
+//    });
+
+    $.plot($("#graph1"), data, {
+        yaxis: { min: 0 },
+        xaxis: { tickDecimals: 0 }
+    });
+}
+
+
