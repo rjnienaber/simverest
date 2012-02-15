@@ -2,7 +2,7 @@ import argparse, sys
 
 def add_optional_args(parser):
     parser.add_argument('-w', '--wsgi_server', help='The wsgi supporting http server to use e.g. paste, cherrypy, twisted', default='wsgiref')
-    parser.add_argument('-p', '--port', help='The port to start the http server on e.g. 8080', type=bool, default=8080)
+    parser.add_argument('-p', '--port', help='The port to start the http server on e.g. 8080', type=int, default=8080)
 
 def get_arguments():
     description = 'Simverest Varnish Dashboard'
