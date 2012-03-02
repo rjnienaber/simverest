@@ -19,11 +19,7 @@ class JSONPCallbackMiddleware(object):
         self.callback_query_parameters = ['jsonp', 'callback']
         self.javascript_mime_types = ['text/javascript', 'application/javascript', 'application/ecmascript', 'application/x-ecmascript']
 
-    def _start_response(status, response_headers, exc_info=None):
-        print status, response_headers
-    
     def __call__(self, e, start_response):
-        self.original_start_response = start_response
         result = list(self.app(e, start_response))
         
         if not 'HTTP_X_REQUESTED_WITH' in e or 'XMLHttpRequest' != e['HTTP_X_REQUESTED_WITH']:
