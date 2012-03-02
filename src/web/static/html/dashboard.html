@@ -18,6 +18,9 @@
             padding-top: 60px;
             padding-bottom: 40px;
         }
+        .spark_cell {
+            width: 100px;
+        }
     </style>
 </head>
 
@@ -35,27 +38,20 @@
 
 <div class="container">
 
-        <ul class="breadcrumb">
-            <li>
-                <a href="#">Home</a> <span class="divider">/</span>
-            </li>
-            <li>
-                <a href="#">Servers</a> <span class="divider">/</span>
-            </li>
-            <li class="active">
-                <a href="#">varnish1</a>
-            </li>
-        </ul>
+        <!--<ul class="breadcrumb">-->
+            <!--<li>-->
+                <!--<a href="#">Home</a> <span class="divider">/</span>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<a href="#">Servers</a> <span class="divider">/</span>-->
+            <!--</li>-->
+            <!--<li class="active">-->
+                <!--<a href="#">varnish1</a>-->
+            <!--</li>-->
+        <!--</ul>-->
 
     <div class="row">
-        <div class="span4">
-            <h2>Last Update</h2>
-            <span id="timeLastUpdated"></span>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="span4">
+        <div class="span5">
             <h2>Backends</h2>
 
             <table class="table table-striped table-bordered table-condensed" id="backends">
@@ -73,19 +69,14 @@
             </table>
         </div>
 
-        <div class="span8">
-            <h2>Heading</h2>
-
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
-                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                fermentum massa justo sit amet risus.</p>
-
-            <p><a class="btn" href="#">View details &raquo;</a></p>
+        <div class="span4">
+            <h2>Last Update</h2>
+            <span id="timeLastUpdated"></span>
         </div>
     </div>
 
     <div class="row">
-        <div class="span4">
+        <div class="span5">
             <h2>Process</h2>
 
             <table class="table table-striped table-bordered table-condensed" id="process">
@@ -101,20 +92,14 @@
 
             </table>
         </div>
-
-        <div class="span8">
-            <h2>Heading</h2>
-
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
-                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                fermentum massa justo sit amet risus.</p>
-
-            <p><a class="btn" href="#">View details &raquo;</a></p>
+        <div class="span7">
+            <h2>Graph</h2>
+            <div id="graph1" style="height:100px"></div>
         </div>
     </div>
 
     <div class="row">
-        <div class="span4">
+        <div class="span5">
             <h2>Stats</h2>
 
             <table class="table table-striped table-bordered table-condensed" id="stats">
@@ -122,7 +107,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Status</th>
-                        <th>Description</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -130,16 +115,6 @@
                 </tbody>
 
             </table>
-        </div>
-
-        <div class="span8">
-            <h2>Heading</h2>
-
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
-                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                fermentum massa justo sit amet risus.</p>
-
-            <p><a class="btn" href="#">View details &raquo;</a></p>
         </div>
     </div>
 
@@ -155,6 +130,8 @@
 <script src="static/js/jquery-1.7.1.min.js"></script>
 <script src="static/js/bootstrap.min.js"></script>
 
+<script src="static/js/flot-0.7/jquery.flot.js"></script>
+<script src="static/js/jquery.sparkline.min.js"></script>
 <script src="static/js/simverest.js"></script>
 
 </body>
