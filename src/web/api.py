@@ -15,15 +15,15 @@ def list_servers():
 
 @api.route('/server/:name/backends')
 def server_health(name):
-    return process_jsonp(utils.HEALTH_JSON_FILE)
+    return read_json_file(utils.HEALTH_JSON_FILE)
 
 @api.route('/server/:name/stats')
 def server_stats(name):
-    return process_jsonp(utils.STATS_JSON_FILE)
+    return read_json_file(utils.STATS_JSON_FILE)
 
-def process_jsonp(file_path):
+def read_json_file(file_path):
     response.content_type = 'application/json'
-    return '{0}({1})'.format(request.query.callback, utils.read_json(file_path))
+    return utils.read_json(file_path)
     
 
     
