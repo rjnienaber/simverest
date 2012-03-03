@@ -1,4 +1,5 @@
 import cgi, itertools
+from StringIO import StringIO
 
 class RemoveTrailingSlashesMiddleware(object):
     '''Middleware to strip and redirect any links with trailing slashes'''
@@ -19,26 +20,26 @@ class JSONPCallbackMiddleware(object):
         self.callback_query_parameters = ['jsonp', 'callback']
         self.javascript_mime_types = ['text/javascript', 'application/javascript', 'application/ecmascript', 'application/x-ecmascript']
 
-    def __call__(self, e, start_response):
-        result = list(self.app(e, start_response))
-        
-        if not 'HTTP_X_REQUESTED_WITH' in e or 'XMLHttpRequest' != e['HTTP_X_REQUESTED_WITH']:
-            return result
+    def __call__(self, environ, start_response):
+        if not 'HTTP_X_REQUESTED_WITH' in environ or 'XMLHttpRequest' != environ['HTTP_X_REQUESTED_WITH']:
+            return self.app(environ, start_response)
             
-        if not 'QUERY_STRING' in e or not any(p in e['QUERY_STRING'] for p in self.callback_query_parameters):
-            return result
+        if not 'QUERY_STRING' in environ or not any(p in environ['QUERY_STRING'] for p in self.callback_query_parameters):
+            return self.app(environ, start_response)
         
-        if not 'HTTP_ACCEPT' in e or not any(m in e['HTTP_ACCEPT'] for m in self.javascript_mime_types):
-            return result
-        
-        query_string = cgi.parse_qs(e['QUERY_STRING'].lstrip('?'))
+        if not 'HTTP_ACCEPT' in environ or not any(m in environ['HTTP_ACCEPT'] for m in self.javascript_mime_types):
+            return self.app(environ, start_response)
+    
+        buffer = StringIO()
+        def custom_start_response(status, headers, exc_info=None):
+            return buffer
+    
+        result = list(self.app(environ, custom_start_response))
+  
+        query_string = cgi.parse_qs(environ['QUERY_STRING'].lstrip('?'))
         callback_name = query_string['callback'] if 'callback' in query_string else query_string['jsonp']
-        
+
         start = callback_name[0] + '('
         length = len(start) + len(result[0]) + 1
         start_response('200 OK', [('Content-Length', str(length))])
         return itertools.chain.from_iterable([[start], result, [')']])
-        '''value = ''.join(result)
-        value = start + value + ')'
-        
-        return [start, result, ')']'''
