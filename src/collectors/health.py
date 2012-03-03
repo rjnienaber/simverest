@@ -2,9 +2,11 @@ from datetime import datetime
 from contextlib import closing
 import json
 import utils
+from base import CollectorBase
 
-class VarnishHealth:
-    def __init__(self, hostname, use_unbuffer):
+class VarnishHealth(CollectorBase):
+    def __init__(self, host, username, password, hostname, use_unbuffer=False):
+        super(VarnishHealth, self).__init__(host, username, password)
         self.backends = {}
         self.hostname = hostname
         self.use_unbuffer = use_unbuffer
@@ -24,7 +26,10 @@ class VarnishHealth:
                     
                     #this line should loop indefinitely as the varnishlog never completes
                     for line in stdout:
-                        self._process_line(line.strip())
+                        if self.should_continue:
+                            self._process_line(line.strip())
+                        else:
+                            break
         finally:
             print 'Health collecting ending'
     

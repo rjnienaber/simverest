@@ -1,60 +1,37 @@
 import time, sys, os
-from contextlib import closing
 from collectors.health import VarnishHealth
 from collectors.stats import VarnishStats
 from web import http_server
-from subprocess import SubProcess
+from subprocess import SubProcess, SubProcessMonitor
 from options import get_arguments
 import utils
 
-
-def process_data(host, username, password, varnish):
-    try:
-        with closing(utils.start_ssh(host, username, password)) as ssh:
-            varnish.process(ssh)
-    except KeyboardInterrupt:
-        pass
-
-def start_web_server(varnish_hosts, port=8080, server='wsgiref'):
-    try:
-        http_server.start(varnish_hosts, port, server)
-    except KeyboardInterrupt:
-        pass
-        
 if __name__ == "__main__":
     utils.set_json_path(os.getcwd())
     
     arguments = get_arguments()
     
     hostname = 'testing'
-    processes = []
+    monitor = SubProcessMonitor()
     if not arguments.test:
+        host, user, password = arguments.host, arguments.username, arguments.password
+        hostname = hostname = utils.ssh_exec_command('hostname', host=host, username=user, password=password)
 
-        details = (arguments.host, arguments.username, arguments.password)
-        hostname = hostname = utils.ssh_exec_command('hostname', host=details[0], username=details[1], password=details[2])
-    
-        stats = SubProcess('Stats', process_data, details + (VarnishStats(hostname),))
-        health = SubProcess('Health', process_data, details + (VarnishHealth(hostname, False),))
-        stats.start()
-        health.start()
+        stats = VarnishStats(host, user, password, hostname)
+        monitor.add_worker(SubProcess('Stats', stats.process_data, stats.stop))
+        
+        health = VarnishHealth(host, user, password, hostname)
+        monitor.add_worker(SubProcess('Health', health.process_data, health.stop))
+        
         print 'Started gathering varnish data'
         
-        processes += [stats, health]
     else:
         import testing
-        testing.generate_test_data()
-        
-    web = SubProcess('Web', start_web_server, [hostname], {'port': arguments.port, 'server':arguments.wsgi_server})
-    web.start()
-    
-    processes.append(web)
-    
-    try:
-        while True:
-            time.sleep(1)
-            for process in processes:
-                process.check()
-    except KeyboardInterrupt:
-        pass
-        
+        monitor.add_worker(SubProcess('Testing', testing.update_files))
+        print 'Started generating test data'
+
+    SubProcess('WorkerMonitor', monitor.start, monitor.stop).start()
+    http_server.start(hostname, arguments.port, arguments.wsgi_server)
+
+    monitor.stop()
     print 'Ending gathering of varnish data'

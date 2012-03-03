@@ -4,9 +4,11 @@ import json
 import copy
 from xml.etree import ElementTree
 import utils
+from base import CollectorBase
 
-class VarnishStats:
-    def __init__(self, hostname):
+class VarnishStats(CollectorBase):
+    def __init__(self, host, username, password, hostname):
+        super(VarnishStats, self).__init__(host, username, password)
         self.hostname = hostname
         counters = ['client_conn', 'client_req', 'cache_hit', 'cache_hitpass', 
             'cache_miss', 'client_drop', 'backend_conn']
@@ -18,7 +20,7 @@ class VarnishStats:
     def process(self, ssh):
         try:
             self.server_timezone_offset = utils.ssh_exec_command('date +%z', ssh=ssh)
-            while True:
+            while self.should_continue:
                 varnish_counters = self._get_current_varnish_counters(ssh)
                 varnish_stats = self._process_varnish_counters(varnish_counters)
                 varnish_stats['process'] = self._get_process_stats(ssh)
