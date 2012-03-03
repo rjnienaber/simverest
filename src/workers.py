@@ -1,7 +1,7 @@
 import time
 from threading import Thread 
 
-class SubProcess(object):
+class Worker(object):
     def __init__(self, name, start_target, stop_target, args=(), kwargs={}):
         self.name = name
         self.start_target = start_target
@@ -31,7 +31,7 @@ class SubProcess(object):
     def stop(self):
         self.stop_target()
 
-class SubProcessMonitor(object):
+class WorkerMonitor(object):
     def __init__(self):
         self.workers = []
         self.should_continue = True
