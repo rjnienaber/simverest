@@ -24,5 +24,5 @@ def static_files(static_path):
         
     file_name = path.basename(static_path)
     file_path = path.join(web.STATIC_PATH, path.dirname(static_path))
-    
+
     return static_file(file_name, file_path)

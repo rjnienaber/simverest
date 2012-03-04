@@ -6,12 +6,12 @@ from middleware import RemoveTrailingSlashesMiddleware, JSONPCallbackMiddleware
 from api import api
 from web import web
 
-def start(server_state, port, server, host='0.0.0.0', debug=False):
-    bottle.debug(True)
+def start(server_state, static_path, port, server, host='0.0.0.0', debug=False):
+    bottle.debug(debug)
     bottle.TEMPLATE_PATH.append(os.path.join(os.path.dirname(__file__), 'views'))
     
     api.VARNISH_STATE = server_state
-    web.STATIC_PATH = os.path.join(os.path.dirname(__file__), 'static')
+    web.STATIC_PATH = static_path
     
     web.mount('/api', api)
     

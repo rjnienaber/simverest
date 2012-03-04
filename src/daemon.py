@@ -7,9 +7,7 @@ from workers import Worker, WorkerMonitor
 from options import get_arguments
 import utils
 
-if __name__ == "__main__":
-    arguments = get_arguments()
-    
+def main(arguments, static_path):
     hostname = 'testing'
     monitor = WorkerMonitor()
     server_state = ServerState()
@@ -31,7 +29,11 @@ if __name__ == "__main__":
         print 'Started generating test data'
 
     Worker('WorkerMonitor', monitor.start, monitor.stop).start()
-    http_server.start(server_state, arguments.port, arguments.wsgi_server)
+    http_server.start(server_state, static_path, arguments.port, arguments.wsgi_server)
     
     print 'Simverest stopping...'
     monitor.stop()
+
+if __name__ == "__main__":
+    static_path = os.path.join(os.path.dirname(__file__), 'web', 'static')
+    main(get_arguments(), static_path)

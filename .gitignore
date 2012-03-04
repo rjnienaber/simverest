@@ -1,2 +1,7 @@
 *.pyc
 *.json
+*.pyo
+*.log
+install/warnsimverest.txt
+install/build
+install/dist
