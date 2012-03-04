@@ -35,7 +35,7 @@ class JSONPCallbackMiddleware(object):
             return buffer
     
         result = list(self.app(environ, custom_start_response))
-  
+
         query_string = cgi.parse_qs(environ['QUERY_STRING'].lstrip('?'))
         callback_name = query_string['callback'] if 'callback' in query_string else query_string['jsonp']
 

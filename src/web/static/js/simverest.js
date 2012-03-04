@@ -1,5 +1,5 @@
-var backendURL = "api/server/varnish1/backends?callback=?";
-var statsURL = "api/server/varnish1/stats?callback=?";
+var backendURL = "api/server/DC-PP-VRN1/backends?callback=?";
+var statsURL = "api/server/DC-PP-VRN1/stats?callback=?";
 var timer;
 var sparkMap = {};
 var chartMap = {};
@@ -43,7 +43,7 @@ function getStats(){
         function(data) {
             updateTimestamp(data.timestamp);
             updateProcess(data.process);
-            updateStats(data.varnish);
+            updateStats(data.varnishstats);
         });
 }
 
@@ -102,7 +102,7 @@ function createServerStatusRow(table, name){
 }
 
 function updateServerStatusRow(row, backendData){
-    row.find('.lastchanged').html(backendData.last_change);
+    row.find('.lastchanged').html(backendData.timestamp);
 
     if(backendData.state == "healthy"){
         row.find('.health').find('span').html("Healthy");
@@ -208,10 +208,6 @@ function drawGraph(){
     if(chartMap['client_conn'] != null){
         data.push(chartMap['client_conn']);
     }
-//
-//    $.each(chartMap, function(key, value) {
-//        data.push(chartMap[key]);
-//    });
 
     $.plot($("#graph1"), data, {
         yaxis: { min: 0 },

@@ -1,16 +1,8 @@
-import os
 import time
 from datetime import datetime
 from contextlib import closing
 import json
 from paramiko import SSHClient, SSHException, AutoAddPolicy
-
-HEALTH_JSON_FILE = 'health.json'
-STATS_JSON_FILE = 'stats.json'
-
-def set_json_path(path):
-    HEALTH_JSON_FILE = os.path.join(path, 'health.json')
-    STATS_JSON_FILE = os.path.join(path, 'stats.json')
 
 def start_ssh(host, username, password):
     ssh = SSHClient()
@@ -31,22 +23,10 @@ def ssh_exec_command(command, ssh=None, host=None, username=None, password=None)
     with closing(start_ssh(host, username, password)) as ssh:
         return run_command(ssh, command)
 
-def convert_to_utc(timestamp):
+def get_timestamp():
+    timestamp = now()
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", 
            time.gmtime(time.mktime(timestamp.timetuple())))
-        
-def dump_data(data, filepath):
-    dthandler = lambda obj: convert_to_utc(obj) if isinstance(obj, datetime) else None
-    with open(filepath, 'w') as file:
-        json.dump(data, file, indent=2, default=dthandler)
-        
-def read_all(filePath):
-    with open(filePath, 'r') as file:
-        return file.read()
 
-def read_json(file_path):
-    while True:
-        data = read_all(file_path)
-        if data != '':
-            return data
-        time.sleep(0.5)
+def now():
+    return datetime.now()

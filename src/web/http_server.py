@@ -6,11 +6,11 @@ from middleware import RemoveTrailingSlashesMiddleware, JSONPCallbackMiddleware
 from api import api
 from web import web
 
-def start(varnish_hosts, port, server, host='0.0.0.0', debug=False):
+def start(server_state, port, server, host='0.0.0.0', debug=False):
     bottle.debug(True)
     bottle.TEMPLATE_PATH.append(os.path.join(os.path.dirname(__file__), 'views'))
     
-    api.VARNISH_HOSTS['servers'] = varnish_hosts
+    api.VARNISH_STATE = server_state
     web.STATIC_PATH = os.path.join(os.path.dirname(__file__), 'static')
     
     web.mount('/api', api)
