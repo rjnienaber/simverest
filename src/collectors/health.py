@@ -40,8 +40,10 @@ class VarnishHealth(CollectorBase):
     def _process_status(self, host, state):
         if host in self.backends:
             status = self.backends[host]
-            has_changed = status['state'] != state
-            if has_changed:
+            if status['state'] != state:
+                status['last_change'] = datetime.now()
+                status['state'] = state
                 self.server_state.update_backend(self.hostname, host, state)
         else:
+            self.backends[host] = {'state': state, 'last_change': datetime.now()}
             self.server_state.update_backend(self.hostname, host, state)
