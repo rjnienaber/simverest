@@ -1,5 +1,4 @@
-var backendURL = "api/server/DC-PP-VRN1/backends?callback=?";
-var statsURL = "api/server/DC-PP-VRN1/stats?callback=?";
+var statsUrl = "api/server/DC-PP-VRN1?callback=?";
 var timer;
 var sparkMap = {};
 var chartMap = {};
@@ -11,7 +10,6 @@ $(document).ready(function (){
 });
 
 function execute(){
-    getBackends();
     getStats();
 
     counter++;
@@ -19,28 +17,26 @@ function execute(){
     timer=setTimeout("execute()",1000);
 }
 
-function getBackends(){
-    $.getJSON(backendURL,
-        function(data) {
-            $.each(data.backends, function(i,backend){
-                var name = backend.name;
+function processBackends(backends){
+	$.each(backends, function(i,backend){
+		var name = backend.name;
 
-                var table = $('#backends');
-                var row = table.find('#'+name);
+		var table = $('#backends');
+		var row = table.find('#'+name);
 
-                if (row.html() == null){
-                    createServerStatusRow(table, name);
-                    updateServerStatusRow(table.find('#'+name), backend);
-                }else{
-                    updateServerStatusRow(row, backend);
-                }
-            });
-        });
+		if (row.html() == null){
+			createServerStatusRow(table, name);
+			updateServerStatusRow(table.find('#'+name), backend);
+		}else{
+			updateServerStatusRow(row, backend);
+		}
+	});
 }
 
 function getStats(){
-    $.getJSON(statsURL,
+    $.getJSON(statsUrl,
         function(data) {
+			processBackends(data.backends);
             updateTimestamp(data.timestamp);
             updateProcess(data.process);
             updateStats(data.varnishstats);

@@ -66,5 +66,5 @@ class ServerState(object):
     def get_varnishstats(self, hostname):
         if not hostname in self.servers:
             return {}
-            
-        return self.servers[hostname][VARNISH_STAT_KEY]
+        
+        return {'varnishstats': self.servers[hostname][VARNISH_STAT_KEY]}

@@ -93,7 +93,7 @@ class ServerStateTests(unittest.TestCase):
         state._get_server('varnish1')
         process_state = state.get_varnishstats('varnish1')
         
-        self.assertEquals([], process_state)
+        self.assertEquals({'varnishstats': []}, process_state)
         
     def test_should_update_varnish_stats(self):
         state = ServerState()
@@ -101,7 +101,7 @@ class ServerStateTests(unittest.TestCase):
         state.update_varnishstats('varnish1', [{'name': 'conns', 'value': 34.3, 'description': 'connections'}])
         process_state = state.get_varnishstats('varnish1')
         
-        self.assertEquals([{'name': 'conns', 'value': 34.3, 'description': 'connections'}], process_state)
+        self.assertEquals({'varnishstats': [{'name': 'conns', 'value': 34.3, 'description': 'connections'}]}, process_state)
 
     def test_should_return_empty_dict_of_servers(self):
         state = ServerState()
