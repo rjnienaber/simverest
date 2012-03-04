@@ -32,6 +32,6 @@ if __name__ == "__main__":
 
     Worker('WorkerMonitor', monitor.start, monitor.stop).start()
     http_server.start(server_state, arguments.port, arguments.wsgi_server)
-
+    
     print 'Simverest stopping...'
     monitor.stop()

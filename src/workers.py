@@ -12,11 +12,8 @@ class Worker(object):
         self.thread = None
         
     def start(self):
-        if self.thread != None:
-            self.thread.terminate()
         self.thread = Thread(target=self.start_target, args=self.args, kwargs=self.kwargs)
         self.thread.start() 
-        return self
     
     def is_alive(self):
         return self.thread.is_alive()
@@ -24,7 +21,9 @@ class Worker(object):
     def check(self):
         if self.is_alive():
             return
+        
         self.start()
+        
         self.restarts += 1
         print '{0} restarted {1} time(s)'.format(self.name, self.restarts)
     

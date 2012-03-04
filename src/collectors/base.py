@@ -11,6 +11,7 @@ class CollectorBase(object):
         self.server_state = server_state
 
     def process_data(self):
+        self.should_continue = True
         with closing(utils.start_ssh(self.host, self.username, self.password)) as ssh:
             self.process(ssh)
 
