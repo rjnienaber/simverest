@@ -5,8 +5,8 @@ from twisted.web import wsgi
 from twisted.python.threadpool import ThreadPool
 from twisted.internet import reactor
 
-from options import get_arguments
+from options import get_executable_arguments
 import daemon
 
 if __name__ == "__main__":
-    daemon.main(get_arguments(), os.environ["_MEIPASS2"])
+    daemon.main(get_executable_arguments(), os.environ["_MEIPASS2"])
