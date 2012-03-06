@@ -46,6 +46,8 @@ class WorkerMonitor(object):
         while self.should_continue:
             time.sleep(1)
             for worker in self.workers:
+                if not self.should_continue:
+                    break
                 try:
                     worker.check()
                 except:
