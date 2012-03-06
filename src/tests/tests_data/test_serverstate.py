@@ -27,7 +27,7 @@ class ServerStateTests(unittest.TestCase):
 
     @mock.patch('utils.now')
     def test_should_update_backend_state(self, now_mock):
-        now_mock.return_value = datetime(2011, 10, 01)
+        now_mock.return_value = datetime(2011, 10, 0o1)
         state = ServerState()
 
         state.update_backend('varnish1', 'web2', 'healthy')
@@ -45,7 +45,7 @@ class ServerStateTests(unittest.TestCase):
 
         state.update_backend('varnish1', 'web2', 'healthy')
 
-        now_mock.return_value = now = datetime(2011, 10, 01)
+        now_mock.return_value = now = datetime(2011, 10, 0o1)
         state.update_backend('varnish1', 'web2', 'sick')
         backend_state = state.get_backend('varnish1', 'web2')
 
@@ -146,7 +146,7 @@ class ServerStateTests(unittest.TestCase):
 
     @mock.patch('utils.now')
     def test_should_return_all_backends(self, now_mock):
-        now_mock.return_value = datetime(2011, 10, 01)
+        now_mock.return_value = datetime(2011, 10, 0o1)
         now = '2011-09-30T23:00:00Z'
         state = ServerState()
 

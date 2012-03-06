@@ -2,7 +2,7 @@ from datetime import datetime
 from contextlib import closing
 import json
 import utils
-from base import CollectorBase
+from .base import CollectorBase
 
 
 class VarnishHealth(CollectorBase):
@@ -36,7 +36,7 @@ class VarnishHealth(CollectorBase):
                         else:
                             break
         finally:
-            print 'Health collecting ending'
+            print('Health collecting ending')
 
     def _process_line(self, line):
         """'line' should be in this format: <webserver> healthy"""

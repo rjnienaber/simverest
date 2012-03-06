@@ -26,18 +26,18 @@ def main(args, static_path):
         health = VarnishHealth(host, user, password, hostname, server_state)
         monitor.add_worker(Worker('Health', health.process_data, health.stop))
 
-        print 'Started gathering varnish data'
+        print('Started gathering varnish data')
 
     else:
         import testing
         worker = Worker('Testing', testing.update_files, testing.stop)
         monitor.add_worker(worker)
-        print 'Started generating test data'
+        print('Started generating test data')
 
     Worker('WorkerMonitor', monitor.start, monitor.stop).start()
     http_server.start(server_state, static_path, args.port, args.wsgi_server)
 
-    print 'Simverest stopping...'
+    print('Simverest stopping...')
     monitor.stop()
 
 if __name__ == "__main__":

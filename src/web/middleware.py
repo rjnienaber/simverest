@@ -1,6 +1,6 @@
 import cgi
 import itertools
-from StringIO import StringIO
+from io import StringIO
 
 
 class RemoveTrailingSlashesMiddleware(object):

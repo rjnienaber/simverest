@@ -44,4 +44,4 @@ def get_executable_arguments():
 
 
 if __name__ == '__main__':
-    print get_executable_arguments()
+    print(get_executable_arguments())

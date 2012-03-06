@@ -13,7 +13,7 @@ def update_files():
         health_data = json.loads(utils.read_json(utils.HEALTH_JSON_FILE))
         health_data['name'] = 'testing'
         stats_data = json.loads(utils.read_json(utils.STATS_JSON_FILE))
-        print 'Generating test data'
+        print('Generating test data')
         while should_continue:
             #randomly make a server change status every 10 seconds
             if random.randint(1, 10) == 3:
@@ -38,7 +38,7 @@ def update_files():
     except KeyboardInterrupt:
         pass
 
-    print 'Ending test thread'
+    print('Ending test thread')
 
 
 def stop():

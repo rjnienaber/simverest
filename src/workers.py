@@ -27,7 +27,7 @@ class Worker(object):
         self.start()
 
         self.restarts += 1
-        print '{0} restarted {1} time(s)'.format(self.name, self.restarts)
+        print('{0} restarted {1} time(s)'.format(self.name, self.restarts))
 
     def stop(self):
         self.stop_target()

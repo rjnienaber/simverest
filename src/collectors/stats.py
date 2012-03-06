@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 from xml.etree import ElementTree
 import utils
-from base import CollectorBase
+from .base import CollectorBase
 
 
 class VarnishStats(CollectorBase):
@@ -25,7 +25,7 @@ class VarnishStats(CollectorBase):
 
                 time.sleep(1)
         finally:
-            print 'Stats collecting ending'
+            print('Stats collecting ending')
 
     def _get_current_varnish_counters(self, ssh):
         varnish_stats_xml = utils.ssh_exec_command(self.varnish_command,
@@ -61,7 +61,7 @@ class VarnishStats(CollectorBase):
 
         #calculate averages for the period
         varnish_stats = []
-        joined = zip(newest['varnish'], oldest['varnish'])
+        joined = list(zip(newest['varnish'], oldest['varnish']))
         for join in joined:
             assert join[0]['name'] == join[1]['name']
             difference = join[0]['value'] - join[1]['value']
