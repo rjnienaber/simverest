@@ -1,6 +1,7 @@
 from contextlib import closing
 import utils
 
+
 class CollectorBase(object):
     def __init__(self, host, username, password, hostname, server_state):
         self.host = host
@@ -12,7 +13,8 @@ class CollectorBase(object):
 
     def process_data(self):
         self.should_continue = True
-        with closing(utils.start_ssh(self.host, self.username, self.password)) as ssh:
+        ssh_details = (self.host, self.username, self.password)
+        with closing(utils.start_ssh(*ssh_details)) as ssh:
             self.process(ssh)
 
     def stop(self):

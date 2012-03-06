@@ -1,8 +1,12 @@
-import utils, time, json, random
+import utils
+import time
+import json
+import random
 from datetime import datetime
 from threading import Thread
 
 should_continue = True
+
 
 def update_files():
     try:
@@ -17,23 +21,25 @@ def update_files():
                 index = random.randint(0, 4)
                 backend = health_data['backends'][index]
 
-                backend['state'] = 'healthy' if backend['state'] == 'sick' else 'sick'
+                state = 'healthy' if backend['state'] == 'sick' else 'sick'
+                backend['state'] = state
                 backend['last_change'] = datetime.now()
-                    
+
                 utils.dump_data(health_data, utils.HEALTH_JSON_FILE)
-        
+
             #update stats
             stats_data['process']['cpu'] = random.randint(0, 10)
             for counter in stats_data['varnish']:
                 counter['value'] = random.random() * 100
-            
+
             utils.dump_data(stats_data, utils.STATS_JSON_FILE)
-            
-            time.sleep(1) 
+
+            time.sleep(1)
     except KeyboardInterrupt:
         pass
-    
+
     print 'Ending test thread'
+
 
 def stop():
     should_continue = False
