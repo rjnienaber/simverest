@@ -1,4 +1,5 @@
-var statsUrl = "api/server/DC-PP-VRN1?callback=?";
+
+
 var timer;
 var sparkMap = {};
 var chartMap = {};
@@ -6,15 +7,20 @@ var counter = 1;
 var colourCounter = 1;
 
 $(document).ready(function (){
-    execute();
+    //get the first server
+    $.getJSON("api/servers?callback=?",
+        function(data) {
+            if (data.servers.length > 0)
+                execute(data.servers[0]);
+        });
 });
 
-function execute(){
-    getStats();
+function execute(server){
+    getStats(server);
 
     counter++;
 
-    timer=setTimeout("execute()",1000);
+    timer=setTimeout("execute('" + server + "')",1000);
 }
 
 function processBackends(backends){
@@ -33,7 +39,9 @@ function processBackends(backends){
 	});
 }
 
-function getStats(){
+function getStats(server){
+    var statsUrl = "api/server/" + server + "?callback=?";
+
     $.getJSON(statsUrl,
         function(data) {
 			processBackends(data.backends);
