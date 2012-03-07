@@ -19,7 +19,7 @@ or
 
 ::
 
-   python simverest.py <ip address of server> <username> <password>
+   python daemon.py <ip address of server> <username> <password>
 
 To get a full list of options, you can use the following command
 
@@ -31,7 +31,7 @@ or
 
 ::
 
-   python simverest.py -h
+   python daemon.py -h
 
 
 ============
