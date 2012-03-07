@@ -1,9 +1,9 @@
 ================== 
 What is Simverest?
 ==================
-Simverest acts as a simple dashboard for a Varnish cache. It will provide you with information such as the current state of the backends, what the current processing load on the server is, and other useful stats provided by varnish programs.
+Simverest acts as a simple dashboard for a [Varnish cache](https://www.varnish-cache.org/). It will provide you with information such as the current state of the backends, what the current processing load on the server is, and other useful stats provided by various Varnish programs.
 
-Simverest uses common command line tools (e.g. grep, awk, top), parses their output and provides a central location where that information can be exposed to users without having to know these commands.
+Simverest uses common command line tools (e.g. grep, awk, top) to parse the output of these tools and provides a central location where that information can be exposed to users without having to know these commands.
 
 ===============
 Getting Started
@@ -21,6 +21,8 @@ or
 
    python daemon.py <ip address of server> <username> <password>
 
+This will start collecting information from the Varnish server and also start a web server on port 8080 (can be changed via command line switch). Users can then navigate to http://<ip address of simverest>:8080 and they will get a dashboard showing various stats about the Varnish server.
+   
 To get a full list of options, you can use the following command
 
 :: 
