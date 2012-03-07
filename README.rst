@@ -14,7 +14,11 @@ In its most basic form, you'll connect to a Varnish server through SSH with a us
 :: 
 
    simverest.exe <ip address of server> <username> <password>
-   or
+
+or
+
+::
+
    python simverest.py <ip address of server> <username> <password>
 
 To get a full list of options, you can use the following command
@@ -22,7 +26,11 @@ To get a full list of options, you can use the following command
 :: 
 
    simverest.exe -h
-   or 
+
+or 
+
+::
+
    python simverest.py -h
 
 
