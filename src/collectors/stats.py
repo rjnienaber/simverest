@@ -6,7 +6,7 @@ from .base import CollectorBase
 
 
 class VarnishStats(CollectorBase):
-    def __init__(self, host, username, password, hostname, server_state):
+    def __init__(self, host, username, password, hostname, server_state, stats_window):
         super(VarnishStats, self).__init__(host, username, password,
                                            hostname, server_state)
 
@@ -15,7 +15,7 @@ class VarnishStats(CollectorBase):
 
         self.varnish_command = 'varnishstat -x -f ' + ','.join(counters)
         self.counter_records = []
-        self.record_limit = 10
+        self.record_limit = stats_window
 
     def process(self, ssh):
         try:

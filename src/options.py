@@ -9,6 +9,9 @@ def add_optional_args(parser, for_executable):
                             'twisted', default='wsgiref')
     parser.add_argument('-p', '--port', help='The port to start the http ' \
                             'server on e.g. 8080', type=int, default=8080)
+    parser.add_argument('-s', '--stat_window', help='The number of samples' \
+                        ' to use in order to smooth the stats window e.g. 5', 
+                        type=int, default=5)
 
 
 def build_parser(for_executable):

@@ -20,7 +20,8 @@ def main(args, static_path):
                                                       username=user,
                                                       password=password)
 
-        stats = VarnishStats(host, user, password, hostname, server_state)
+        stats = VarnishStats(host, user, password, hostname, server_state, 
+                             args.stat_window)
         monitor.add_worker(Worker('Stats', stats.process_data, stats.stop))
 
         health = VarnishHealth(host, user, password, hostname, server_state)
