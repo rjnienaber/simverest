@@ -1,7 +1,7 @@
 ================== 
 What is Simverest?
 ==================
-Simverest acts as a simple dashboard for a _Varnish cache:https://www.varnish-cache.org/. It will provide you with information such as the current state of the backends, what the current processing load on the server is, and other useful stats provided by various Varnish programs.
+Simverest acts as a simple dashboard for a `Varnish cache`__ server. It will provide you with information such as the current state of the backends, what the current processing load on the server is, and other useful stats provided by various Varnish_ programs.
 
 Simverest uses common command line tools (e.g. grep, awk, top) to parse the output of these tools and provides a central location where that information can be exposed to users without having to know these commands.
 
@@ -9,7 +9,7 @@ Simverest uses common command line tools (e.g. grep, awk, top) to parse the outp
 Getting Started
 ===============
 
-In its most basic form, you'll connect to a Varnish server through SSH with a username and password
+In its most basic form, you'll connect to a Varnish_ server through SSH with a username and password
 
 :: 
 
@@ -21,7 +21,7 @@ or
 
    python daemon.py <ip address of server> <username> <password>
 
-This will start collecting information from the Varnish server and also start a web server on port 8080 (can be changed via command line switch). Users can then navigate to http://<ip address of simverest>:8080 and they will get a dashboard showing various stats about the Varnish server.
+This will start collecting information from the Varnish_ server and also start a web server on port 8080 (can be changed via command line switch). Users can then navigate to http://<ip address of simverest>:8080 and they will get a dashboard showing various stats about the Varnish_ server.
    
 To get a full list of options, you can use the following command
 
@@ -40,7 +40,7 @@ or
 API
 ============
 
-Part of the usefulness of Simverest is that it provides a web api that returns current information about the state of a Varnish server.
+Part of the usefulness of Simverest is that it provides a web api that returns current information about the state of a Varnish_ server.
 
 An example would be the following:
 
@@ -125,7 +125,10 @@ License
 =======
 Copyright 2012 Richard Nienaber
 
-Simverest is released under the GPL license:
-	http://www.opensource.org/licenses/gpl-3.0.html
+Simverest is released under the GPL_ license:
 
 If you submit a pull request, please note that you agree that your code will fall under this license.
+
+.. _Varnish: https://www.varnish-cache.org/
+__ Varnish_
+.. _GPL: http://www.opensource.org/licenses/gpl-3.0.html
