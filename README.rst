@@ -1,7 +1,7 @@
 ================== 
 What is Simverest?
 ==================
-Simverest acts as a simple dashboard for a [Varnish cache](https://www.varnish-cache.org/). It will provide you with information such as the current state of the backends, what the current processing load on the server is, and other useful stats provided by various Varnish programs.
+Simverest acts as a simple dashboard for a _Varnish cache:https://www.varnish-cache.org/. It will provide you with information such as the current state of the backends, what the current processing load on the server is, and other useful stats provided by various Varnish programs.
 
 Simverest uses common command line tools (e.g. grep, awk, top) to parse the output of these tools and provides a central location where that information can be exposed to users without having to know these commands.
 
