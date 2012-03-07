@@ -99,9 +99,6 @@ function createServerStatusRow(table, name){
             .append($('<td class="health">')
                 .append('<span class="label label-success">')
             )
-            .append($('<td>')
-                .append('<i class="icon-resize-full">')
-            )
         );
 }
 
@@ -142,9 +139,6 @@ function createProcessRow(table, name){
             )
             .append($('<td class="processValue">')
             )
-            .append($('<td>')
-                .append('<i class="icon-resize-full">')
-            )
             .append($('<td class="spark_cell">')
             )
         );
@@ -178,9 +172,6 @@ function createStatsRow(table, name){
             .append($('<td class="statDescription">')
             )
             .append($('<td class="statStatus">')
-            )
-            .append($('<td>')
-                .append('<i class="icon-resize-full">')
             )
             .append($('<td class="spark_cell">')
             )
