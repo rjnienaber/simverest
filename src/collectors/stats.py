@@ -4,16 +4,16 @@ from xml.etree import ElementTree
 import utils
 from .base import CollectorBase
 
+VARNISH_COUNTERS = ['client_conn', 'client_req', 'cache_hit', 'cache_hitpass',
+            'cache_miss', 'client_drop', 'backend_conn']
 
 class VarnishStats(CollectorBase):
     def __init__(self, host, username, password, hostname, server_state, stats_window):
         super(VarnishStats, self).__init__(host, username, password,
                                            hostname, server_state)
 
-        counters = ['client_conn', 'client_req', 'cache_hit', 'cache_hitpass',
-            'cache_miss', 'client_drop', 'backend_conn']
-
-        self.varnish_command = 'varnishstat -x -f ' + ','.join(counters)
+        counters = ','.join(VARNISH_COUNTERS)
+        self.varnish_command = 'varnishstat -x -f ' + counters
         self.counter_records = []
         self.record_limit = stats_window
 

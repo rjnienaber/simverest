@@ -65,9 +65,9 @@ class ServerStateTests(unittest.TestCase):
 
         state._get_server('varnish1')
         process_state = state.get_process('varnish1')
-
-        self.assertEquals({'virtualmem': '0m', 'reservedmem': '0m',
-                           'cpu': '0.0', 'memory': '0.0'}, process_state)
+        
+        self.assertEquals({'virtualmem_mb': 0, 'reservedmem_mb': 0,
+                           'cpu': 0.0, 'memory': 0.0}, process_state)
 
     def test_should_update_process_state(self):
         state = ServerState()
@@ -75,8 +75,8 @@ class ServerStateTests(unittest.TestCase):
         state.update_process('varnish1', '410m', '109m', '2.0', '2.8')
         process_state = state.get_process('varnish1')
 
-        self.assertEquals({'virtualmem': '410m', 'reservedmem': '109m',
-                           'cpu': '2.0', 'memory': '2.8'}, process_state)
+        self.assertEquals({'virtualmem_mb': 410, 'reservedmem_mb': 109,
+                           'cpu': 2.0, 'memory': 2.8}, process_state)
 
     def test_should_update_existing_process_state(self):
         state = ServerState()
@@ -85,8 +85,8 @@ class ServerStateTests(unittest.TestCase):
         state.update_process('varnish1', '510m', '209m', '3.0', '3.8')
         process_state = state.get_process('varnish1')
 
-        self.assertEquals({'virtualmem': '510m', 'reservedmem': '209m',
-                           'cpu': '3.0', 'memory': '3.8'}, process_state)
+        self.assertEquals({'virtualmem_mb': 510, 'reservedmem_mb': 209,
+                           'cpu': 3.0, 'memory': 3.8}, process_state)
 
     def test_should_return_empty_dict_for_unknown_hostname_for_stat(self):
         state = ServerState()

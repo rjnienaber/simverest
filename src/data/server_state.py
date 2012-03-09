@@ -1,5 +1,6 @@
 import utils
 from datetime import datetime
+import re
 
 BACKEND_KEY = 'backends'
 PROCESS_KEY = 'process'
@@ -9,11 +10,12 @@ VARNISH_STAT_KEY = 'varnishstat'
 class ServerState(object):
     def __init__(self):
         self.servers = {}
+        self.stats_matcher = re.compile('\d+')
 
     def _get_server(self, hostname):
         if not hostname in self.servers:
-            default_process = {'virtualmem': '0m', 'reservedmem': '0m',
-                               'cpu': '0.0', 'memory': '0.0'}
+            default_process = {'virtualmem_mb': 0, 'reservedmem_mb': 0,
+                               'cpu': 0.0, 'memory': 0.0}
             self.servers[hostname] = {BACKEND_KEY: [],
                                       PROCESS_KEY: default_process,
                                       VARNISH_STAT_KEY: []}
@@ -51,10 +53,11 @@ class ServerState(object):
 
     def update_process(self, hostname, virtualmem, reservedmem, cpu, memory):
         process = self._get_server(hostname)[PROCESS_KEY]
-        process['virtualmem'] = virtualmem
-        process['reservedmem'] = reservedmem
-        process['cpu'] = cpu
-        process['memory'] = memory
+        parse_memory = lambda s: int(self.stats_matcher.findall(s)[0])
+        process['virtualmem_mb'] = parse_memory(virtualmem)
+        process['reservedmem_mb'] = parse_memory(reservedmem)
+        process['cpu'] = float(cpu)
+        process['memory'] = float(memory)
 
     def get_process(self, hostname):
         if not hostname in self.servers:

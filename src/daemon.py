@@ -21,7 +21,7 @@ def main(args, static_path):
                                                       password=password)
 
         stats = VarnishStats(host, user, password, hostname, server_state, 
-                             args.stat_window)
+                             args.stat_window)  
         monitor.add_worker(Worker('Stats', stats.process_data, stats.stop))
 
         health = VarnishHealth(host, user, password, hostname, server_state)
@@ -30,10 +30,10 @@ def main(args, static_path):
         print('Started gathering varnish data')
 
     else:
-        import testing
-        worker = Worker('Testing', testing.update_files, testing.stop)
+        from tests.data_generator import DummyDataGenerator
+        dummydata = DummyDataGenerator(server_state)
+        worker = Worker('Testing', dummydata.update_files, dummydata.stop)
         monitor.add_worker(worker)
-        print('Started generating test data')
 
     Worker('WorkerMonitor', monitor.start, monitor.stop).start()
     http_server.start(server_state, static_path, args.port, args.wsgi_server)

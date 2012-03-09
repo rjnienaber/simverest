@@ -116,17 +116,23 @@ function updateServerStatusRow(row, backendData){
     }
 }
 
+function isFloat(value) {
+	return (value + '').indexOf('.') != -1
+}
+
 function updateProcess(processInfo){
 
     $.each(processInfo, function(key, val) {
         var table = $('#process');
         var row = table.find('#'+key);
-
+		
+		value = isFloat(val) ? val.toFixed(1) : val;
+		
         if (row.html() == null){
             createProcessRow(table, key);
-            updateProcessRow(table.find('#'+key), key, val);
+            updateProcessRow(table.find('#'+key), key, value);
         }else{
-            updateProcessRow(row, key, val);
+            updateProcessRow(row, key, value);
         }
     });
 }
