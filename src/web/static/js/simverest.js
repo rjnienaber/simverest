@@ -1,10 +1,9 @@
-
-
 var timer;
 var sparkMap = {};
 var chartMap = {};
 var counter = 1;
 var colourCounter = 1;
+var initialized = false;
 
 $(document).ready(function (){
     //get the first server
@@ -44,6 +43,11 @@ function getStats(server){
 
     $.getJSON(statsUrl,
         function(data) {
+			if (!initialized) {
+				initialized = true;
+				$('body').fadeIn(500);
+			}
+		
 			processBackends(data.backends);
             updateTimestamp(data.timestamp);
             updateProcess(data.process);
