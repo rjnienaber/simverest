@@ -21,23 +21,23 @@
         .spark_cell {
             width: 100px;
         }
-		#github_banner {
-			position: absolute; 
-			top: 0; 
-			right: 0; 
-			border: 0;
-		}
+        #github_banner {
+            position: absolute; 
+            top: 0; 
+            right: 0; 
+            border: 0;
+        }
     </style>
 </head>
 
-<body style="display: none;">
+<body style="display: none;" xmlns:ng="http://angularjs.org" ng:controller="VarnishServerController">
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-			<a href="http://github.com/rjnienaber/simverest">
-				<img id="github_banner" src="https://a248.e.akamai.net/assets.github.com/img/4c7dc970b89fd04b81c8e221ba88ff99a06c6b61/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub">
-			</a>
+            <a href="http://github.com/rjnienaber/simverest">
+                <img id="github_banner" src="https://a248.e.akamai.net/assets.github.com/img/4c7dc970b89fd04b81c8e221ba88ff99a06c6b61/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub">
+            </a>
 
             <a class="brand" href="#">Simverest</a>
         </div>
@@ -59,7 +59,8 @@
                 <!--<a href="#">varnish1</a>-->
             <!--</li>-->
         <!--</ul>-->
-
+    <input type="hidden" id="update" ng:click="getStats()" />
+    <input type="hidden" id="serverName" />
     <div class="row">
         <div class="span5">
             <h2>Backends</h2>
@@ -73,17 +74,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
-
+                    <tr ng:repeat="backend in backends">
+                        <td>{{backend.name}}</td>
+                        <td>{{backend.timestamp}}</td>
+                        <td>
+                            <span class="label {{ getHealthLabel($index)}}">{{backend.state | uppercase}}</span>
+                        </td>
+                    <tr>
+                </tbody>    
             </table>
         </div>
 
         <div class="span4">
             <h2>Last Update</h2>
-            <span id="timeLastUpdated"></span>
+            <span>{{timestamp}}</span>
         </div>
     </div>
-
+    <span id="sparkle_test"></span>
     <div class="row">
         <div class="span5">
             <h2>Process</h2>
@@ -96,9 +103,15 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
-
+               <tbody>
+                    <tr id="{{stat.name}}" ng:repeat="stat in process">
+                        <td>{{stat.description}}</td>
+                        <td>{{stat.value}}</td>
+                        <td class="spark_cell">
+                            <span class="sparkline" id="spark_{{stat.name}}">
+                        </td>
+                    <tr>
+                </tbody>    
             </table>
         </div>
         <div class="span7">
@@ -120,8 +133,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
-
+                    <tr id="{{stat.name}}" ng:repeat="stat in varnishstats">
+                        <td class="statDescription">{{stat.description}}</td>
+                        <td>{{stat.value | number:2}}</td>
+                        <td class="spark_cell">
+                            <span class="sparkline" id="spark_{{stat.name}}">
+                        </td>
+                    <tr>
+                </tbody>    
             </table>
         </div>
     </div>
@@ -135,12 +154,13 @@
 </div>
 <!-- /container -->
 
-<script src="static/js/jquery-1.7.1.min.js"></script>
-<script src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://code.angularjs.org/angular-0.9.19.min.js" ng:autobind></script>
 
-<script src="static/js/flot-0.7/jquery.flot.min.js"></script>
-<script src="static/js/jquery.sparkline.min.js"></script>
-<script src="static/js/simverest.js"></script>
+<script type="text/javascript" src="static/js/flot-0.7/jquery.flot.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="static/js/simverest.js"></script>
 
 </body>
 

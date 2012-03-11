@@ -24,7 +24,7 @@ class DummyDataGenerator:
         
         while self.should_continue:
             #randomly make a server change status every 10 seconds
-            if random.randint(1, 10) == 3:
+            if random.randint(1, 10) % 2 == 0:
                 backend_name = random.choice(FAKE_BACKEND_NAMES)
                 state = random.choice(['healthy', 'sick'])
                 server_state.update_backend(FAKE_SERVER_NAME, backend_name,
