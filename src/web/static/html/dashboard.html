@@ -61,6 +61,7 @@
         <!--</ul>-->
     <input type="hidden" id="update" ng:click="getStats()" />
     <input type="hidden" id="serverName" />
+    
     <div class="row">
         <div class="span5">
             <h2>Backends</h2>
@@ -78,7 +79,7 @@
                         <td>{{backend.name}}</td>
                         <td>{{backend.timestamp}}</td>
                         <td>
-                            <span class="label {{ getHealthLabel($index)}}">{{backend.state | uppercase}}</span>
+                            <span class="label label-{{ getHealthLabel($index)}}">{{backend.state | uppercase}}</span>
                         </td>
                     <tr>
                 </tbody>    
@@ -90,7 +91,7 @@
             <span>{{timestamp}}</span>
         </div>
     </div>
-    <span id="sparkle_test"></span>
+    
     <div class="row">
         <div class="span5">
             <h2>Process</h2>
@@ -108,7 +109,7 @@
                         <td>{{stat.description}}</td>
                         <td>{{stat.value}}</td>
                         <td class="spark_cell">
-                            <span class="sparkline" id="spark_{{stat.name}}">
+                            <span class="sparkline"></span>
                         </td>
                     <tr>
                 </tbody>    
@@ -116,7 +117,7 @@
         </div>
         <div class="span7">
             <h2>Graph</h2>
-            <div id="graph1" style="height:100px"></div>
+            <div id="graph1" style="height:100px; width: 400px;"></div>
         </div>
     </div>
 
@@ -136,8 +137,8 @@
                     <tr id="{{stat.name}}" ng:repeat="stat in varnishstats">
                         <td class="statDescription">{{stat.description}}</td>
                         <td>{{stat.value | number:2}}</td>
-                        <td class="spark_cell">
-                            <span class="sparkline" id="spark_{{stat.name}}">
+                         <td class="spark_cell">
+                            <span class="sparkline"></span>
                         </td>
                     <tr>
                 </tbody>    

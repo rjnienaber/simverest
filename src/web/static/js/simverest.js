@@ -1,5 +1,3 @@
-var initialized = false;
-
 function VarnishServerController() {
     self = this;
     this.backends = []
@@ -8,20 +6,17 @@ function VarnishServerController() {
     this.timestamp = ''
     
     this.getHealthLabel = function(index) {
-        return this.backends[index].state == 'healthy' ? "label-success" : "label-important";
+        return this.backends[index].state == 'healthy' ? "success" : "important";
     }
     
     this.updateServerInfo = function(data) {
-        if (!initialized && $('#backends > tbody > tr').html().trim() != "") {
-            initialized = true;
-            $('body').fadeIn(500);
-        }
+        check_load_complete();
         
         self.backends = data.backends;
         
         var process_values = []
         var addValue = function(name, value, description) {
-            process_values.push({'description': description, 'value': value, 'name': name})
+            process_values.push({description: description, value: value, name: name})
         }
         addValue('cpu', data.process.cpu.toFixed(1), 'CPU (%)');
         addValue('memory', data.process.memory.toFixed(1), 'Memory (%)');
@@ -32,8 +27,8 @@ function VarnishServerController() {
         self.timestamp = data.timestamp;
         self.varnishstats = data.varnishstats;
         
-		//update graph
-        $(data.varnishstats).each(function (index, data) { updateDataPoints(data); });
+        drawSparkLines(process_values.concat(data.varnishstats))
+        drawGraph(data.varnishstats);
         
         setTimeout("$('#update').click()", 1000);
     }
@@ -52,62 +47,59 @@ function VarnishServerController() {
         });
 }
 
-$(function() {
-    $('#sparkle_test').sparkline([1,2,3,4,5,4,3,2,1]);
-});
+var initialized = false;
+function check_load_complete() {
+    if (!initialized && $('#backends > tbody > tr').html().trim() != "") {
+        initialized = true;
+        $('body').fadeIn(500);
+    }
+}
 
 var sparkMap = {};
+function drawSparkLines(values) {
+    $(values).each(function (index, data) {
+        var sparkValues = sparkMap[data.name] || []
+
+        if(sparkValues.length == 20)
+            sparkValues.splice(0, 1);
+        
+        sparkValues.push(data.value);
+        sparkMap[data.name] = sparkValues;
+    });
+    
+    $('.sparkline').each(function() {
+        var name = $(this).parent().parent().attr('id')
+        $(this).sparkline(sparkMap[name], { width: sparkMap[name].length * 4 });
+    });
+}
+
 var chartMap = {};
 var counter = 1;
 var colourCounter = 1;
 
-function updateDataPoints(data){
+function drawGraph(varnishstats) {
+    var index;
+    for (index in varnishstats)
+        if (varnishstats[index].name == 'client_conn')
+            break;
+
+    var data = varnishstats[index];
     var name = data.name;
-    var row = $('#' + name);
-    if(sparkMap[name] == null){
-        sparkMap[name] = [];
-    }
+    
+    //update chart
+    var chartValues = chartMap[name] || {label:name, data:[], color: colourCounter++};
+    var chartData = chartValues.data;
+    
+    if(chartData.length == 120)
+        chartData.splice(0, 1);
 
-    if(sparkMap[name].length == 20){
-        for(var i = 0; i < 20; i ++){
-            sparkMap[name][i] = sparkMap[name][i+1];
-        }
-        sparkMap[name].pop();
-    }
-
-    sparkMap[name].push(data.value);
-
-    if(chartMap[name] == null){
-        chartMap[name] = {'label':name, 'data':[], 'color': colourCounter++};
-    }
-
-    if(chartMap[name].data.length == 120){
-        for(var i = 0; i < 120; i ++){
-            chartMap[name].data[i] = chartMap[name].data[i+1];
-        }
-        chartMap[name].data.pop();
-    }
-
-    chartMap[name].data.push([counter, data.value]);
-
-    drawSparklines(name);
-    //drawGraph();
-
-}
-function drawSparklines(name){
-	var selector = $('#spark_' + name);
-	if (selector.length)
-		selector.sparkline(sparkMap[name], { width: sparkMap[name].length * 4 });
-}
-
-function drawGraph(){
-    var data = [];
-
-    if(chartMap['client_conn'] != null){
-        data.push(chartMap['client_conn']);
-    }
-
-    $.plot($("#graph1"), data, {
+    chartData.push([counter, data.value]);
+    chartValues.data = chartData;
+    chartMap[name] = chartValues;
+    
+    counter++;
+    
+    $.plot($("#graph1"), chartData, {
         yaxis: { min: 0 },
         xaxis: { tickDecimals: 0 }
     });
