@@ -16,26 +16,39 @@ $(document).ready(function (){
 
 function execute(server){
     getStats(server);
-
     counter++;
-
     timer=setTimeout("execute('" + server + "')",1000);
 }
 
 function processBackends(backends){
+	
+	var errorCount = 0;
+	
 	$.each(backends, function(i,backend){
 		var name = backend.name;
 
 		var table = $('#backends');
 		var row = table.find('#'+name);
-
+		
 		if (row.html() == null){
-			createServerStatusRow(table, name);
-			updateServerStatusRow(table.find('#'+name), backend);
+			createBackendStatusRow(table, name);			
+			var backendError = updateBackendStatusRow(table.find('#'+name), backend);
+			backendError ? errorCount++ : false;
 		}else{
-			updateServerStatusRow(row, backend);
+			var backendError = updateBackendStatusRow(row, backend);
+			backendError ? errorCount++ : false;
 		}
 	});
+	
+	displayServerInError(errorCount);
+}
+
+function displayServerInError(errorCount){
+	
+	if(errorCount > 0)
+		Tinycon.setBubble(errorCount);
+	else
+		Tinycon.reset();
 }
 
 function getStats(server){
@@ -92,7 +105,7 @@ function updateTimestamp(timestamp){
     $('#timeLastUpdated').html(timestamp);
 }
 
-function createServerStatusRow(table, name){
+function createBackendStatusRow(table, name){
     table.find('tbody')
         .append($('<tr id="'+name+'">')
             .append($('<td>')
@@ -106,7 +119,10 @@ function createServerStatusRow(table, name){
         );
 }
 
-function updateServerStatusRow(row, backendData){
+function updateBackendStatusRow(row, backendData){
+
+	var backendError = false;
+
     row.find('.lastchanged').html(backendData.timestamp);
 
     if(backendData.state == "healthy"){
@@ -114,10 +130,12 @@ function updateServerStatusRow(row, backendData){
         row.find('.health').find('span').removeClass("label-important");
         row.find('.health').find('span').addClass("label-success");
     }else{
+		backendError = true;
         row.find('.health').find('span').html("Failure");
         row.find('.health').find('span').removeClass("label-success");
         row.find('.health').find('span').addClass("label-important");
-    }
+    }	
+	return backendError;
 }
 
 function isFloat(value) {
