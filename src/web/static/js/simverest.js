@@ -77,30 +77,36 @@ var chartMap = {};
 var counter = 1;
 var colourCounter = 1;
 
-function drawGraph(varnishstats) {
-    var index;
-    for (index in varnishstats)
-        if (varnishstats[index].name == 'client_conn')
-            break;
+function drawGraph(varnishstats){
 
-    var data = varnishstats[index];
-    var name = data.name;
-    
-    //update chart
-    var chartValues = chartMap[name] || {label:name, data:[], color: colourCounter++};
-    var chartData = chartValues.data;
-    
-    if(chartData.length == 120)
-        chartData.splice(0, 1);
+    $(varnishstats).each(function(index, values) {
+        var name = values.name;
+        if (name != 'client_conn')
+            return;
+        
+        var info = values.value;
+        if(chartMap[name] == null){
+            chartMap[name] = {'label':name, 'data':[], 'color': colourCounter++};
+        }
 
-    chartData.push([counter, data.value]);
-    chartValues.data = chartData;
-    chartMap[name] = chartValues;
-    
-    counter++;
-    
-    $.plot($("#graph1"), chartData, {
-        yaxis: { min: 0 },
-        xaxis: { tickDecimals: 0 }
+        if(chartMap[name].data.length == 120){
+            for(var i = 0; i < 120; i ++){
+                chartMap[name].data[i] = chartMap[name].data[i+1];
+            }
+            chartMap[name].data.pop();
+        }
+
+        chartMap[name].data.push([counter++,info]);
+
+        var data = [];
+
+        if(chartMap['client_conn'] != null){
+            data.push(chartMap['client_conn']);
+        }
+
+        $.plot($("#graph1"), data, {
+            yaxis: { min: 0 },
+            xaxis: { tickDecimals: 0 }
+        });
     });
 }
