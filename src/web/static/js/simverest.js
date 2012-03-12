@@ -13,7 +13,7 @@ function VarnishServerController() {
         check_load_complete();
         
         self.backends = data.backends;
-        //updateFaviconHealthCount(data.backends);
+        updateFaviconHealthCount(data.backends);
         
         var process_values = []
         var addValue = function(name, value, description) {
@@ -63,10 +63,9 @@ function updateFaviconHealthCount(backends) {
             errorCount++;
     });
     
-    if (errorCount > 0)
-		Tinycon.setBubble(errorCount);
-	else
-		Tinycon.reset();
+    Tinycon.setBubble(errorCount);
+    if (errorCount == 0)
+        Tinycon.reset();
 }
 
 var sparkMap = {};
