@@ -80,7 +80,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng:repeat="backend in backends">
+                    <tr ng:repeat="backend in backends.$orderBy('name')">
                         <td>{{backend.name}}</td>
                         <td>{{backend.timestamp}}</td>
                         <td>
