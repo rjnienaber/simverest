@@ -32,10 +32,16 @@
             height:100px; 
             width: 657px;;
         }
+        #loading_container{
+           position: absolute;
+           top: 50%;
+           width: 100%;
+           text-align: center;
+        }
     </style>
 </head>
 
-<body style="display: none;" xmlns:ng="http://angularjs.org" ng:controller="VarnishServerController">
+<body>
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -49,9 +55,12 @@
     </div>
 </div>
 
+<div id="loading_container">
+    <img id="img_loading" src="static/img/loading.gif" alt="Loading"><br />
+    <span>LOADING....</span>
+</div>
 
-
-<div class="container">
+<div class="container" style="display: none;" xmlns:ng="http://angularjs.org" ng:controller="VarnishServerController">
 
         <!--<ul class="breadcrumb">-->
             <!--<li>-->

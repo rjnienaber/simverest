@@ -1,5 +1,5 @@
 function VarnishServerController() {
-    self = this;
+    var self = this;
     this.backends = []
     this.process = []
     this.varnishstats = []
@@ -52,7 +52,8 @@ var initialized = false;
 function check_load_complete() {
     if (!initialized && $('#backends > tbody > tr').html().trim() != "") {
         initialized = true;
-        $('body').fadeIn(500);
+        $('#loading_container').hide();
+        $('.container').fadeIn(500);
     }
 }
 
