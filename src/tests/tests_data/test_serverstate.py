@@ -4,11 +4,7 @@ from data.server_state import ServerState
 import mock
 from datetime import datetime
 
-
 class ServerStateTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test_should_return_empty_dict_for_unknown_hostname_for_backend(self):
         state = ServerState()
 
@@ -19,7 +15,7 @@ class ServerStateTests(unittest.TestCase):
     def test_should_return_empty_dict_for_unknown_backend(self):
         state = ServerState()
 
-        state.update_backend('varnish1', 'web2', 'healthy')
+        state.update_backend('varnish1', 'web2', 'healthy', '200', 'OK')
 
         backend_state = state.get_backend('varnish1', 'web1')
 
@@ -30,11 +26,12 @@ class ServerStateTests(unittest.TestCase):
         now_mock.return_value = datetime(2011, 10, 0o1)
         state = ServerState()
 
-        state.update_backend('varnish1', 'web2', 'healthy')
+        state.update_backend('varnish1', 'web2', 'healthy', '200', 'OK')
 
         backend_state = state.get_backend('varnish1', 'web2')
 
         self.assertEquals({'name': 'web2', 'state': 'healthy',
+                           'status_code': '200', 'status_text': 'OK',
                            'timestamp': '2011-09-30T23:00:00Z'},
                            backend_state)
 
@@ -43,13 +40,16 @@ class ServerStateTests(unittest.TestCase):
         now_mock.return_value = datetime.now()
         state = ServerState()
 
-        state.update_backend('varnish1', 'web2', 'healthy')
+        state.update_backend('varnish1', 'web2', 'healthy', '200', 'OK')
 
         now_mock.return_value = now = datetime(2011, 10, 0o1)
-        state.update_backend('varnish1', 'web2', 'sick')
+        state.update_backend('varnish1', 'web2', 'sick', '500', 
+                                         'Internal Server Error')
         backend_state = state.get_backend('varnish1', 'web2')
 
         self.assertEquals({'name': 'web2', 'state': 'sick',
+                           'status_code': '500', 
+                           'status_text': 'Internal Server Error',
                            'timestamp': '2011-09-30T23:00:00Z'},
                            backend_state)
 
@@ -150,13 +150,15 @@ class ServerStateTests(unittest.TestCase):
         now = '2011-09-30T23:00:00Z'
         state = ServerState()
 
-        state.update_backend('varnish1', 'web2', 'healthy')
-        state.update_backend('varnish1', 'web1', 'healthy')
+        state.update_backend('varnish1', 'web2', 'healthy', '200', 'OK')
+        state.update_backend('varnish1', 'web1', 'healthy', '200', 'OK')
         backends = state.get_backends('varnish1')
 
         expected = {'backends': [{'name': 'web2', 'state': 'healthy',
+                                  'status_code': '200', 'status_text': 'OK',
                                   'timestamp': now},
                                  {'name': 'web1', 'state': 'healthy',
+                                  'status_code': '200', 'status_text': 'OK',
                                   'timestamp': now}]}
 
         self.assertEquals(expected, backends)

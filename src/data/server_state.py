@@ -25,14 +25,19 @@ class ServerState(object):
     def get_servers(self):
         return {'servers': sorted([s for s in self.servers])}
 
-    def update_backend(self, hostname, backend_name, state):
+    def update_backend(self, hostname, backend_name, state, 
+                                       status_code, status_text):
         backend = self.get_backend(hostname, backend_name)
         if backend == {}:
             server = self._get_server(hostname)
             server[BACKEND_KEY].append({'name': backend_name, 'state': state,
+                                        'status_code': status_code, 
+                                        'status_text': status_text,
                                         'timestamp': utils.get_timestamp()})
         else:
             backend['state'] = state
+            backend['status_code'] = status_code
+            backend['status_text'] = status_text
             backend['timestamp'] = utils.get_timestamp()
 
     def get_backend(self, hostname, backend_name):
