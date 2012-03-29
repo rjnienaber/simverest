@@ -5,8 +5,12 @@ function VarnishServerController() {
     this.varnishstats = []
     this.timestamp = ''
     
-    this.getHealthLabel = function(index) {
-        return this.backends[index].state == 'healthy' ? "success" : "important";
+    this.getHealthLabel = function(backend_name) {
+        for(var index in this.backends)
+            if (this.backends[index].name == backend_name)
+                return this.backends[index].state == 'healthy' ? "success" : "important";
+        
+        return ''
     }
     
     this.updateServerInfo = function(data) {

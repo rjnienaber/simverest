@@ -38,6 +38,12 @@
            width: 100%;
            text-align: center;
         }
+        #backends .statuscode {
+            width: 45px;
+        }
+        #backends .statustext {
+            width: 70px;
+        }
     </style>
 </head>
 
@@ -86,6 +92,8 @@
                         <th>Backend</th>
                         <th>Last Update</th>
                         <th>Status</th>
+                        <th class="statuscode">HTTP Status Code</th>
+                        <th class="statustext">HTTP Status Text</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,8 +101,10 @@
                         <td>{{backend.name}}</td>
                         <td>{{backend.timestamp}}</td>
                         <td>
-                            <span class="label label-{{ getHealthLabel($index)}}">{{backend.state | uppercase}}</span>
+                            <span class="label label-{{ getHealthLabel(backend.name)}}">{{backend.state | uppercase}}</span>
                         </td>
+                        <td>{{backend.status_code}}</td>
+                        <td>{{backend.status_text}}</td>
                     <tr>
                 </tbody>    
             </table>
