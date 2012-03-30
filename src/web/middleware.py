@@ -1,6 +1,8 @@
 import cgi
 import itertools
 from io import StringIO
+import utils
+import time
 
 
 class RemoveTrailingSlashesMiddleware(object):
@@ -44,6 +46,7 @@ class JSONPCallbackMiddleware(object):
         if not any(m in environ['HTTP_ACCEPT']
            for m in self.javascript_mime_types):
             return self.app(environ, start_response)
+            
         buffer = StringIO()
 
         def custom_start_response(status, headers, exc_info=None):
@@ -59,3 +62,20 @@ class JSONPCallbackMiddleware(object):
         length = len(start) + len(result[0]) + 1
         start_response('200 OK', [('Content-Length', str(length))])
         return itertools.chain.from_iterable([[start], result, [')']])
+
+        
+class NoCacheMiddleware(object):
+    '''Adds a no caching header to the response'''
+    CONTROL_VALUE = 'max-age=0,no-cache,no-store,post-check=0,pre-check=0'
+    
+    def __init__(self, app):
+        self.app = app
+        self.expires_value = time.strftime("%a, %d %b %Y %H:%M:%S UTC", utils.utcnow())
+
+    def __call__(self, environ, start_response):
+        def custom_start_response(status, headers, exc_info=None):
+            headers += [('Cache-Control', NoCacheMiddleware.CONTROL_VALUE),
+                        ('Expires', self.expires_value)]
+            return start_response(status, headers, exc_info);
+
+        return self.app(environ, custom_start_response)

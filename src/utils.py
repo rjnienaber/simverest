@@ -28,10 +28,10 @@ def ssh_exec_command(command, ssh=None, host=None,
 
 
 def get_timestamp():
-    timestamp = now()
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ",
-           time.gmtime(time.mktime(timestamp.timetuple())))
-
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", utcnow())
 
 def now():
     return datetime.now()
+
+def utcnow():
+    return time.gmtime(time.mktime(now().timetuple()))

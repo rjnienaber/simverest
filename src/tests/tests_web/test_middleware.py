@@ -1,6 +1,8 @@
 import os
 import unittest
-from web.middleware import JSONPCallbackMiddleware
+import mock
+from datetime import datetime
+from web.middleware import JSONPCallbackMiddleware, NoCacheMiddleware
 
 JSON_RESULT = ['{}']
 QUERY_STRING = '?callback=jquery23423562352358'
@@ -77,3 +79,32 @@ class JSONPCallbackMiddlewareTests(unittest.TestCase):
         result = middleware(headers, handler)
         self.assertEquals(['jquery23423562352358(', '{}', ')'], list(result))
         self.assertEquals([('Content-Length', '24')], response_headers)
+
+        
+class NoCacheMiddlewareTests(unittest.TestCase):
+    def setUp(self):
+        global response_headers
+        response_headers = []
+
+    @mock.patch('utils.now')
+    def test_should_return_response_with_no_headers_set(self, now_mock):
+        now_mock.return_value = datetime(2011, 10, 0o1)
+        
+        def initial_handler(environ, start_response):
+            start_response('200 OK', [('Content-Length', '2')])
+            return ['{}']   
+
+        middleware = NoCacheMiddleware(initial_handler)
+
+        def handler(status, passed_headers, exc_info=None):
+            global response_headers
+            response_headers += passed_headers
+            return ['{}']
+
+        headers = [('Content-Length', '2'),
+                   ('Cache-Control', NoCacheMiddleware.CONTROL_VALUE),
+                   ('Expires', 'Fri, 30 Sep 2011 23:00:00 UTC')] 
+        
+        result = middleware({}, handler)
+        self.assertEquals(['{}'], result)
+        self.assertEquals(headers, response_headers)

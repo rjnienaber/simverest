@@ -8,6 +8,8 @@ from collectors import stats
 
 FAKE_BACKEND_NAMES = ['FAKE-BACKEND1', 'FAKE-BACKEND2', 'FAKE-BACKEND3']
 FAKE_SERVER_NAMES = ['TEST-SERVER1', 'TEST-SERVER2', 'TEST-SERVER3']
+FAKE_HTTP_CODES = {'200': 'OK', '302':'Found', '404': 'Not Found', 
+                   '500':'Internal Server Error', '':''}
 
 class DummyDataGenerator:
     def __init__(self, server_state):
@@ -20,7 +22,9 @@ class DummyDataGenerator:
         
         for server in FAKE_SERVER_NAMES:
             for backend_name in FAKE_BACKEND_NAMES:
-                server_state.update_backend(server, backend_name, 'healthy')
+                server_state.update_backend(server, backend_name, 'healthy', 
+                                            '200',
+                                            FAKE_HTTP_CODES['200'])
         
         while self.should_continue:
             for server in FAKE_SERVER_NAMES:
@@ -35,7 +39,15 @@ class DummyDataGenerator:
         if random.randint(1, 10) % 2 == 0:
             backend_name = random.choice(FAKE_BACKEND_NAMES)
             state = random.choice(['healthy', 'sick'])
-            server_state.update_backend(server, backend_name, state)
+            if state == 'sick':
+                codes = FAKE_HTTP_CODES.keys()
+                codes.remove('200')
+                status_code = random.choice(codes)
+            else:
+                status_code = '200'
+            server_state.update_backend(server, backend_name, state, 
+                                        status_code, 
+                                        FAKE_HTTP_CODES[status_code])
 
         #update stats
         cpu = random.random() * 25

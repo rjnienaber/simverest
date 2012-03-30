@@ -2,7 +2,7 @@ from bottle import Bottle, run
 import bottle
 import os
 
-from .middleware import RemoveTrailingSlashesMiddleware, JSONPCallbackMiddleware
+from .middleware import RemoveTrailingSlashesMiddleware, JSONPCallbackMiddleware, NoCacheMiddleware
 from .api import api
 from .web import web
 
@@ -18,7 +18,12 @@ def start(server_state, static_path, port, server, host='0.0.0.0',
 
     web.mount('/api', api)
 
-    jsonp_enabled_app = JSONPCallbackMiddleware(web)
-    stripped_slashes_app = RemoveTrailingSlashesMiddleware(jsonp_enabled_app)
+    #add middleware
+    middlewares = [JSONPCallbackMiddleware, RemoveTrailingSlashesMiddleware,
+                   NoCacheMiddleware]
+    web_server = web
+    for m in middlewares:
+        web_server = m(web_server)
+    
     print('Starting web server on {0} and port {1}'.format(host, port))
-    run(stripped_slashes_app, host=host, port=port, quiet=True, server=server)
+    run(web_server, host=host, port=port, quiet=True, server=server)
