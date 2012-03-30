@@ -14,9 +14,10 @@ def start(server_state, static_path, port, server, host='0.0.0.0',
     bottle.TEMPLATE_PATH.append(template_path)
 
     api.VARNISH_STATE = server_state
+    api.MOUNT_POINT = '/api'
     web.STATIC_PATH = static_path
 
-    web.mount('/api', api)
+    web.mount(api.MOUNT_POINT, api)
 
     #add middleware
     middlewares = [JSONPCallbackMiddleware, RemoveTrailingSlashesMiddleware,

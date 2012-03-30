@@ -5,11 +5,11 @@ from data.server_state import ServerState
 
 api = Bottle()
 api.VARNISH_STATE = ServerState()
-
+api.MOUNT_POINT = '/'
 
 @api.route('/')
 def redirect_api_servers():
-    redirect("/api/servers")
+    redirect(api.MOUNT_POINT + "/servers")
 
 
 @api.route('/servers')
