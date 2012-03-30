@@ -1,4 +1,4 @@
-function VarnishServerController() {
+function VarnishServerController($defer) {
     var self = this;
     this.backends = []
     this.process = []
@@ -34,19 +34,21 @@ function VarnishServerController() {
         
         drawSparkLines(process_values.concat(data.varnishstats))
         drawGraph(data.varnishstats);
-        
-        setTimeout("$('#update').click()", 1000);
     }
     
     this.getStats = function() {
         var statsUrl = "api/server/" + $('#serverName').val();
         $.getJSON(statsUrl, self.updateServerInfo);
+        
+        $defer(function() { self.getStats(); }, 1000);
     }
     
+    //start retrieving data
     $.getJSON("api/servers",
         function(data) {
             if (data.servers.length == 0)
                 return;
+                
             $('#serverName').val(data.servers[0]);
             self.getStats();
         });
