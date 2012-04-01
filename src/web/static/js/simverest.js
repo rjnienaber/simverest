@@ -1,9 +1,11 @@
 function VarnishServerController($defer) {
     var self = this;
-    this.backends = []
-    this.process = []
-    this.varnishstats = []
-    this.timestamp = ''
+    this.servers = [];
+    this.current_server = '';
+    this.backends = [];
+    this.process = [];
+    this.varnishstats = [];
+    this.timestamp = '';
     
     this.getHealthLabel = function(backend_name) {
         for(var index in this.backends)
@@ -37,7 +39,7 @@ function VarnishServerController($defer) {
     }
     
     this.getStats = function() {
-        var statsUrl = "api/server/" + $('#serverName').val();
+        var statsUrl = "api/server/" + self.current_server;
         $.getJSON(statsUrl, self.updateServerInfo);
         
         $defer(function() { self.getStats(); }, 1000);
@@ -46,10 +48,12 @@ function VarnishServerController($defer) {
     //start retrieving data
     $.getJSON("api/servers",
         function(data) {
+            data.servers.sort();
+            self.servers = data.servers;
             if (data.servers.length == 0)
                 return;
-                
-            $('#serverName').val(data.servers[0]);
+             
+            self.current_server = data.servers[0]
             self.getStats();
         });
 }
@@ -59,7 +63,7 @@ function check_load_complete() {
     if (!initialized && $('#backends > tbody > tr').html().trim() != "") {
         initialized = true;
         $('#loading_container').hide();
-        $('.container').fadeIn(500);
+        $('.container, .nav-collapse').fadeIn(500);
     }
 }
 
