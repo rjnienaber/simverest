@@ -4,8 +4,6 @@ from os import path
 import ConfigParser
 from ConfigParser import ParsingError
 
-INI_FILENAME = 'simverest.ini'
-
 def _add_required_args(parser):
     parser.add_argument('host', help='The Varnish host to get stats from')
     parser.add_argument('username', help='The username required to connect ' \
@@ -39,14 +37,16 @@ def _parse_args(for_executable, args=None):
         description += ' (testing)'
 
     parser = argparse.ArgumentParser(description=description)
-       
-    if not has_test_argument:
+    
+    has_config = '-c' in args or '--config_file' in args
+    must_add_required_args = not has_test_argument and not has_config
+    if must_add_required_args:
         _add_required_args(parser)
     
     _add_optional_args(parser, for_executable, has_test_argument)
 
     options = parser.parse_args(args).__dict__
-    if not has_test_argument:
+    if must_add_required_args:
         server = {'host': options['host'], 'username': options['username'],
                   'password': options['password']}
         del options['host']
@@ -80,6 +80,7 @@ def get_config(for_executable=False, args=None):
     args = args if args else sys.argv[1:]
 
     options = _parse_args(for_executable, args)
+    
     config_file = options['config_file']
     if config_file != '':
         result = _parse_ini_file(config_file)

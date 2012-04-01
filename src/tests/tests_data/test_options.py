@@ -18,9 +18,9 @@ class ServerStateTests(unittest.TestCase):
         expectations = {'failure': False, 'successful_read': True, 
                         'server_configs': 
                         [{'host': '192.168.1.23', 'password': 'adminpass', 
-                          'user': 'admin'}, 
+                          'username': 'admin'}, 
                          {'host': '10.0.0.1', 'password': 'simverest', 
-                         'user': 'simverest'}]
+                         'username': 'simverest'}]
                        }
         result = _parse_ini_file(GOOD_INI_FILEPATH)
         self.assertEquals(expectations, result)
@@ -79,10 +79,9 @@ class ServerStateTests(unittest.TestCase):
         self.assertEquals(expectations, options)
         
     def test_should_have_supplied_executable_arguments_if_no_config_specified(self):
-        test_args = ['VRN1', 'admin', 'adminpass', '-p', 
-                     '8091', '-s', '15']
+        args = ['VRN1', 'admin', 'adminpass', '-p', '8091', '-s', '15']
                      
-        options = _parse_args(True, test_args)
+        options = _parse_args(True, args)
         expectations = {'servers': [{'host': 'VRN1', 'username': 'admin', 
                         'password': 'adminpass'}], 'wsgi_server': 'twisted',
                         'port': 8091, 'stat_window': 15, 'test': False,
@@ -98,6 +97,16 @@ class ServerStateTests(unittest.TestCase):
         expectations = {'wsgi_server': 'gunicorn', 'port': 8091, 
                         'stat_window': 15, 'test': True,
                         'config_file': ''}
+        
+        self.assertEquals(expectations, options)
+        
+    def test_should_not_have_required_arguments_if_config_specified(self):
+        args = ['-c', 'dummy_file', '-p', '8091', '-s', '15', '-w', 'twisted']
+                     
+        options = _parse_args(False, args)
+        expectations = {'wsgi_server': 'twisted', 'port': 8091, 
+                        'stat_window': 15, 'test': False, 
+                        'config_file': 'dummy_file'}
         
         self.assertEquals(expectations, options)
         
