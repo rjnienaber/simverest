@@ -46,6 +46,13 @@ function VarnishServerController($defer) {
     }
     
     this.getStats = function() {
+        matches = /#.*/.exec(window.location.href);
+        if (matches && matches.length > 0) {
+            hash_server = matches[0].substr(1);
+            if (hash_server != self.current_server)
+                self.current_server = hash_server;
+        }
+    
         var statsUrl = "api/server/" + self.current_server;
         $.getJSON(statsUrl, self.updateServerInfo);
         
@@ -55,15 +62,30 @@ function VarnishServerController($defer) {
     //start retrieving data
     $.getJSON("api/servers",
         function(data) {
+            if (!data.servers || data.servers.length == 0)
+                return;
+                
             data.servers.sort();
             self.servers = data.servers;
-            if (data.servers.length == 0)
-                return;
-            
-            self.current_server = data.servers[0]
+                
+            self.current_server = data.servers[0];
+
             self.getStats();
             set_title(self.current_server);
         });
+        
+    $(function() {
+        $(window).hashchange(function(){
+            if (location.hash == '' && self.servers.length == 0)
+                return;
+            
+            var server = location.hash != '' ? location.hash.substr(1) : self.servers[0];
+            var thisValue = {server: server};
+                
+            self.change_server.call(thisValue);
+        });
+        $(window).hashchange();
+    });
 }
 
 function set_title(server_name) {
@@ -136,3 +158,4 @@ function drawGraph(varnishstats){
         xaxis: { tickDecimals: 0 }
     });
 }
+
