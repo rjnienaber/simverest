@@ -9,6 +9,7 @@ function VarnishServerController($defer) {
     
     this.change_server = function() {
         self.current_server = this.server;
+        set_title(this.server);
         self.backends = [];
         self.process = [];
         self.varnishstats = [];
@@ -61,7 +62,12 @@ function VarnishServerController($defer) {
             
             self.current_server = data.servers[0]
             self.getStats();
+            set_title(self.current_server);
         });
+}
+
+function set_title(server_name) {
+    document.title = 'Simverest - ' + server_name
 }
 
 var initialized = false;
