@@ -90,11 +90,15 @@ returns
             "timestamp":"2012-03-07T22:48:21Z",
             "state":"healthy",
             "name":"WEB1"
+            "status_code": "200",
+            "status_text":"OK"
          },
          {
             "timestamp":"2012-03-07T22:48:25Z",
             "state":"sick",
-            "name":"WEB2"
+            "name":"WEB2",
+            "status_code": "500",
+            "status_text":"Internal Server Error"
          }
       ]
    }
