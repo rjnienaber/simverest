@@ -65,7 +65,7 @@
             <div class="nav-collapse" style="display: none;">
                 <ul class="nav">
                     <li ng:class="{true:'active', false:''}[server==current_server]" ng:repeat="server in servers">
-                        <a>{{server}}</a>
+                        <a ng:click="change_server()">{{server}}</a>
                     </li>
                 </ul>
             </div>

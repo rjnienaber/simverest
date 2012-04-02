@@ -7,6 +7,19 @@ function VarnishServerController($defer) {
     this.varnishstats = [];
     this.timestamp = '';
     
+    this.change_server = function() {
+        self.current_server = this.server;
+        self.backends = [];
+        self.process = [];
+        self.varnishstats = [];
+        
+        //graphs
+        sparkMap = {};
+        chartMap = {};
+        counter = 1;
+        colourCounter = 1;
+    }
+    
     this.updateServerInfo = function(data) {
         check_load_complete();
         
@@ -44,7 +57,7 @@ function VarnishServerController($defer) {
             self.servers = data.servers;
             if (data.servers.length == 0)
                 return;
-             
+            
             self.current_server = data.servers[0]
             self.getStats();
         });
