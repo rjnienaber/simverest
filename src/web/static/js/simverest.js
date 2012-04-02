@@ -18,6 +18,7 @@ function VarnishServerController($defer) {
         chartMap = {};
         counter = 1;
         colourCounter = 1;
+        $.plot($("#graph1"), [], {});
     }
     
     this.updateServerInfo = function(data) {
