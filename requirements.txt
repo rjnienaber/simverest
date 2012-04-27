@@ -2,3 +2,4 @@ bottle==0.10.3
 paramiko==1.7.7.1
 pycrypto==2.3
 zope.interface==3.8.0
+discover==0.4.0
