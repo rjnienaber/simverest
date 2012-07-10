@@ -35,6 +35,26 @@ or
 
    python daemon.py -h
 
+Alternatively, you can specify a .ini file with multiple servers
+
+::
+
+   python daemon.py -c simverest.ini
+  
+Here is an example ini file. (Note: At the moment, the headers are not used for anything but that may change)
+
+::
+
+   [varnish1]
+   host=192.168.0.65
+   username=simverest_user
+   password=bR8bUtr9
+   
+   [varnish2]
+   host=192.168.0.66
+   username=simverest_user2
+   password=Q7dRuspa
+   
 
 ============
 API
