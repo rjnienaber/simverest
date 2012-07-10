@@ -6,3 +6,5 @@ install/warnsimverest.txt
 install/build
 install/dist
 src/simverest.ini
+.tox
+*.egg-info
