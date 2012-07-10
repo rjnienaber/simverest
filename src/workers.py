@@ -1,36 +1,41 @@
 import time
 from threading import Thread
+from datetime import datetime
 
 
 class Worker(object):
-    def __init__(self, name, start_target, stop_target, args=(), kwargs={}):
+    def __init__(self, name, unit_of_work, args=(), kwargs={}):
         self.name = name
-        self.start_target = start_target
-        self.stop_target = stop_target
+        self.unit_of_work = unit_of_work
         self.args = args
         self.kwargs = kwargs
         self.restarts = 0
         self.thread = None
 
     def start(self):
-        self.thread = Thread(target=self.start_target,
+        self.thread = Thread(target=self.unit_of_work.start,
                              args=self.args, kwargs=self.kwargs)
+        self.thread.daemon = True
         self.thread.start()
 
     def is_alive(self):
-        return self.thread.is_alive()
+        #if unit of work has been updated in the last 30 seconds, it's alive
+        update_interval = datetime.now() - self.unit_of_work.last_update()
+        thread_still_updating = update_interval < 30
+    
+        return thread_still_updating and self.thread.is_alive()
 
     def check(self):
         if self.is_alive():
             return
-
+        
         self.start()
 
         self.restarts += 1
         print('{0} restarted {1} time(s)'.format(self.name, self.restarts))
 
     def stop(self):
-        self.stop_target()
+        self.unit_of_work.stop()
 
 
 class WorkerMonitor(object):
@@ -61,3 +66,6 @@ class WorkerMonitor(object):
             time.sleep(0.5)
             if len([w for w in self.workers if w.is_alive()]) == 0:
                 break
+    
+    def last_update(self):
+        return datetime.now()

@@ -1,5 +1,6 @@
 from contextlib import closing
 import utils
+from datetime import datetime
 
 
 class CollectorBase(object):
@@ -11,7 +12,7 @@ class CollectorBase(object):
         self.hostname = hostname
         self.server_state = server_state
 
-    def process_data(self):
+    def start(self):
         self.should_continue = True
         ssh_details = (self.host, self.username, self.password)
         with closing(utils.start_ssh(*ssh_details)) as ssh:
@@ -19,3 +20,6 @@ class CollectorBase(object):
 
     def stop(self):
         self.should_continue = False
+
+    def last_update(self):
+        return self.last_update_time

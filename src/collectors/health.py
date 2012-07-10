@@ -30,6 +30,7 @@ class VarnishHealth(CollectorBase):
                     for line in stdout:
                         if self.should_continue:
                             self._process_line(line.strip())
+                            self.last_update_time = datetime.now()
                         else:
                             break
         finally:
@@ -53,4 +54,4 @@ class VarnishHealth(CollectorBase):
             self.backends[host] = {'state': state,
                                    'last_change': datetime.now()}
             self.server_state.update_backend(self.hostname, host, state, 
-                                             status_code, status_text)
+                                             status_code, status_text)       

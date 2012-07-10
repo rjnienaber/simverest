@@ -17,11 +17,11 @@ def add_server(monitor, server_config, server_state, stat_window):
                          stat_window)  
     
     stat_name = 'Stats [{0}]'.format(host)
-    monitor.add_worker(Worker(stat_name, stats.process_data, stats.stop))
+    monitor.add_worker(Worker(stat_name, stats))
 
     health_name = 'Health [{0}]'.format(host)
     health = VarnishHealth(host, user, password, hostname, server_state)
-    monitor.add_worker(Worker(health_name, health.process_data, health.stop))
+    monitor.add_worker(Worker(health_name, health))
 
 def main(config, static_path):
     hostname = 'testing'
@@ -35,10 +35,10 @@ def main(config, static_path):
     else:
         from tests.data_generator import DummyDataGenerator
         dummydata = DummyDataGenerator(server_state)
-        worker = Worker('Testing', dummydata.update_files, dummydata.stop)
+        worker = Worker('Testing', dummydata)
         monitor.add_worker(worker)
 
-    Worker('WorkerMonitor', monitor.start, monitor.stop).start()
+    Worker('WorkerMonitor', monitor).start()
     http_server.start(server_state, static_path, config['port'], config['wsgi_server'])
 
     print('Simverest stopping...')
@@ -46,4 +46,7 @@ def main(config, static_path):
 
 if __name__ == "__main__":
     static_path = os.path.join(os.path.dirname(__file__), 'web', 'static')
-    main(get_config(), static_path)
+    try:
+        main(get_config(), static_path)
+    except:
+        pass

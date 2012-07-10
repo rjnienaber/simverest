@@ -16,7 +16,7 @@ class DummyDataGenerator:
         self.server_state = server_state
         self.should_continue = True
 
-    def update_files(self):
+    def start(self):
         server_state = self.server_state
         print('Generating test data')
         
@@ -65,4 +65,7 @@ class DummyDataGenerator:
         server_state.update_varnishstats(server, varnishstats)
 
     def stop(self):
-        self.should_continue = False    
+        self.should_continue = False
+    
+    def last_update(self):
+        return datetime.now()

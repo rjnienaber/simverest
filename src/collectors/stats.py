@@ -22,7 +22,8 @@ class VarnishStats(CollectorBase):
             while self.should_continue:
                 self._process_varnishstats(ssh)
                 self._process_top_stats(ssh)
-
+                self.last_update_time = datetime.now()
+                
                 time.sleep(1)
         finally:
             print('Stats collecting ending')
